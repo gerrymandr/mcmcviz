@@ -3,7 +3,12 @@ library(magrittr)
 library(purrr)
 library(dplyr)
 library(ggplot2)
+library(redist)
 
+fname <- system.file("/home/bgock/data/cb_2016_us_state_500k.shp", package="sf")
+fname
+
+nc <- st_read(fname)
 
 nytimes = expand.grid(x = 1:5, y = 1:5) %>%
   as.matrix() %>% 
@@ -17,4 +22,10 @@ nytimes = expand.grid(x = 1:5, y = 1:5) %>%
     district = rep(1:5, rep(5,5))
   )
 
-adj_mat = st_touches(nytimes, sparse = FALSE) * 1 
+adj_mat = st_touches(nytimes, sparse = TRUE)
+
+popvect <- runif(25, 1.0, 10000)
+numsims = 100
+numdists = 4
+out = redist.mcmc(adjobj=adj_mat,popvect,numsims,ndists=4)
+
