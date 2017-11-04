@@ -1,4 +1,15 @@
 server = function(input, output, session) {
+  nytimes = expand.grid(x = 1:5, y = 1:5) %>%
+    as.matrix() %>% 
+    st_multipoint() %>%
+    st_sfc() %>%
+    st_cast("POINT") %>%
+    st_make_grid(n = 5,5) %>%
+    st_sf() %>% 
+    mutate(
+      id = 1:n(),
+      district = rep(1:5, rep(5,5))
+    )
   
   state = reactiveValues(
     buttons = list(),
@@ -48,10 +59,16 @@ server = function(input, output, session) {
   })
   
   
+  output$redistrict = eventReactive(input$redistrict, {
+    
+  })
   
+  output$advanced = eventReactive(input$advanced, {
+    
+  })
+  
+
   output$map = renderPlot({
-    
-    
     dists = state$geom %>% group_by(district) %>% summarize() 
     
     ggplot() +
