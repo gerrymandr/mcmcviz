@@ -5,6 +5,10 @@ library(dplyr)
 library(ggplot2)
 library(redist)
 
+fname <- system.file("/home/bgock/data/cb_2016_us_state_500k.shp", package="sf")
+fname
+
+nc <- st_read(fname)
 
 nytimes = expand.grid(x = 1:5, y = 1:5) %>%
   as.matrix() %>% 
@@ -24,3 +28,4 @@ popvect <- runif(25, 1.0, 10000)
 numsims = 100
 numdists = 4
 out = redist.mcmc(adjobj=adj_mat,popvect,numsims,ndists=4)
+
