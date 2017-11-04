@@ -2,7 +2,7 @@ library(mapview)
 library(mapedit)
 library(sf)
 library(shiny)
-
+library(redist)
 library(magrittr)
 library(purrr)
 library(dplyr)
