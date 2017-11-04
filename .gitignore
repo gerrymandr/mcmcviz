@@ -12,3 +12,4 @@ Thumbs.db
 **/build
 **/node_modules
 **/npm-debug.log
+.Rproj.user
