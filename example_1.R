@@ -4,11 +4,8 @@ library(purrr)
 library(dplyr)
 library(ggplot2)
 library(redist)
-
-
-nc <- st_read("data/AnneArundelN.shp")
-#nc <- st_read("data/simple_grid.shp")
-adj_mat = 
+library(leaflet)
+library(rgdal)
 
 popvect = nc$Population
 
@@ -36,4 +33,6 @@ plot(maps[[1]][,"DISTRICT"],)
 plot(maps[[2]][,"DISTRICT"],)
 plot(maps[[3]][,"DISTRICT"],)
 plot(maps[[4]][,"DISTRICT"],)
+
+
 
