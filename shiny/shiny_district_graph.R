@@ -22,20 +22,6 @@ polsby_popper = function(sf) {
 }
 
 
-create_districts = function(sf, n=5)
-{
-  sf %>%
-    mutate(
-      district = sf %>%
-        st_geometry() %>%
-        st_centroid() %>%
-        st_coordinates() %>%
-        .[,1] %>%
-        cut(breaks=n) %>% 
-        as.integer()
-    )
-}
-
 ui = fluidPage(
   selectInput("file_path", "Which data source:", choices = files),
   actionButton("load", "Load data"),
@@ -57,6 +43,8 @@ server = function(input, output, session) {
     if (file.exists(input$file_path)) {
       geom$precincts = st_read(input$file_path, quiet = TRUE)
       geom$districts = geom$precincts %>% group_by(DISTRICT) %>% summarize() 
+      
+      
     } else {
       message("File does not exist")    
     }
@@ -72,8 +60,6 @@ server = function(input, output, session) {
       return()
     
     geom$districts %>%
-      select(DISTRICT) %>%
-      mutate(., "Polsby-Popper" = polsby_popper(.)) %>%
       as.data.frame() %>%
       select(-geometry)
   })
