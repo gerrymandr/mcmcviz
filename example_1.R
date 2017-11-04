@@ -8,41 +8,32 @@ library(leaflet)
 library(rgdal)
 
 
-aa84 <- readOGR("data/AnneArundelN84.shp",
-                  layer = "AnneArundelN84", GDAL1_integer64_policy = TRUE)
-aa <- st_read("data/AnneArundelN.shp")
-binpal <- colorBin("Blues", aa84$Population, 6, pretty = TRUE)
-binpal
-m <- leaflet(aa84) %>%
-  addTiles() %>%  # Add default OpenStreetMap map tiles
-  #addFeatures(st_transform(nc$geom,4326), layerId = nc$geom$id, fillColor = ~binpal(Population))
-  addPolygons(color = "#444444", weight = 1, smoothFactor = 0.5,
-              opacity = 1.0, fillOpacity = 0.5,
-              fillColor = ~binpal(Population),
-              highlightOptions = highlightOptions(color = "white", weight = 2,
-                                                  bringToFront = TRUE))
-m
-
-nytimes = expand.grid(x = 1:5, y = 1:5) %>%
-  as.matrix() %>% 
-  st_multipoint() %>%
-  st_sfc() %>%
-  st_cast("POINT") %>%
-  st_make_grid(n = 5,5) %>%
-  st_sf() %>% 
-  mutate(
-    id = 1:n(),
-    district = rep(1:5, rep(5,5))
-  )
-
-
-
-adj_mat2 = st_touches(aa, sparse = TRUE)
-adj_mat2
 popvect = nc$Population
-numsims = 1000
-numdists = 4
-out = redist.mcmc(adjobj=adj_mat2,popvect,numsims,ndists=8,popcons=.05)
+
+nsims = 100
+nburnin = 10000
+ndists = 3
+popcons = 0.20
+
+source("utility.R")
+
+mcmc = redist.mcmc(adjobj=st_relate(nc, pattern = "****1****"), nc$Population, nsims = nsims+nburnin, ndists=ndists, popcons=popcons)
+
+iters = mcmc$partitions[,1:nsims + nburnin] %>% as.data.frame() %>% as.list()
+
+maps = map(iters, ~ mutate(nc, DISTRICT = .) %>% group_by(DISTRICT) %>% summarize(Population = sum(Population), geometry = st_union(geometry)) )
+save(maps, file="aa_example.Rdata")
+
+
+polsby = map(maps, polsby_popper)
+
+
+
+i=1
+plot(maps[[1]][,"DISTRICT"],)
+plot(maps[[2]][,"DISTRICT"],)
+plot(maps[[3]][,"DISTRICT"],)
+plot(maps[[4]][,"DISTRICT"],)
 
 
 
