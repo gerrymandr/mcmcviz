@@ -16,12 +16,14 @@ binpal
 m <- leaflet(aa84) %>%
   addTiles() %>%  # Add default OpenStreetMap map tiles
   #addFeatures(st_transform(nc$geom,4326), layerId = nc$geom$id, fillColor = ~binpal(Population))
-  addPolygons(color = "#444444", weight = 1, smoothFactor = 0.5,
+  addPolygons(group="cands", color = "#444444", weight = 1, smoothFactor = 0.5,
               opacity = 1.0, fillOpacity = 0.5,
               fillColor = ~binpal(Population),
               highlightOptions = highlightOptions(color = "white", weight = 2,
                                                   bringToFront = TRUE))
+
 m
+m %>% clearGroup("cands")
 
 nytimes = expand.grid(x = 1:5, y = 1:5) %>%
   as.matrix() %>% 

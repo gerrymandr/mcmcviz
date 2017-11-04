@@ -8,7 +8,7 @@ library(purrr)
 library(dplyr)
 library(ggplot2)
 
-
+nc <- st_read("../data/AnneArundelN.shp")
 nytimes = expand.grid(x = 1:5, y = 1:5) %>%
   as.matrix() %>% 
   st_multipoint() %>%
@@ -43,7 +43,7 @@ server = function(input, output, session) {
   state = reactiveValues(
     buttons = list(),
     observers = list(),
-    geom = nytimes,
+    geom = nc,
     cur_selected = c()
   )
   
@@ -52,7 +52,7 @@ server = function(input, output, session) {
     "selectmap",
     leaflet() %>%
       #addTiles() %>%
-      addFeatures(state$geom, layerId = ~state$geom$id)
+      addFeatures(st_transform(state$geom,3857), layerId = ~state$geom$id)
   )
   
   observeEvent(selector(), {
