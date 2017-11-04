@@ -7,6 +7,7 @@ library(redist)
 library(leaflet)
 library(rgdal)
 
+
 aa <- readOGR("data/AnneArundelN.shp",
                   layer = "AnneArundelN", GDAL1_integer64_policy = TRUE)
 ncwgs84 <- st_read("data/AnneArundelN.shp")
@@ -21,6 +22,21 @@ m <- leaflet(ncwgs84) %>%
               highlightOptions = highlightOptions(color = "white", weight = 2,
                                                   bringToFront = TRUE))
 m
+
+nytimes = expand.grid(x = 1:5, y = 1:5) %>%
+  as.matrix() %>% 
+  st_multipoint() %>%
+  st_sfc() %>%
+  st_cast("POINT") %>%
+  st_make_grid(n = 5,5) %>%
+  st_sf() %>% 
+  mutate(
+    id = 1:n(),
+    district = rep(1:5, rep(5,5))
+  )
+
+
+
 adj_mat2 = st_touches(nc, sparse = TRUE)
 adj_mat2
 popvect = nc$Population
