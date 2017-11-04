@@ -12,5 +12,5 @@ adj_mat2
 popvect = nc$Population
 numsims = 1000
 numdists = 4
-out = redist.mcmc(adjobj=adj_mat2,popvect,numsims,ndists=8,popcons=.2)
+out = redist.mcmc(adjobj=adj_mat2,popvect,numsims,ndists=8,popcons=.05)
 
