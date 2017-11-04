@@ -1,0 +1,58 @@
+Arguments: 
+  /usr/local/Cellar/node/8.6.0/bin/node /usr/local/Cellar/yarn/1.1.0/libexec/bin/yarn.js install
+
+PATH: 
+  /Users/qwinters/anaconda2/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+
+Yarn version: 
+  1.1.0
+
+Node version: 
+  8.6.0
+
+Platform: 
+  darwin x64
+
+npm manifest: 
+  {
+    "name": "reduxapp",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+      "start": "webpack-dev-server"
+    },
+    "author": "Joseph Miller",
+    "license": "ISC",
+    "devDependencies": {
+      "babel-core": "^6.24.0",
+      "babel-loader": "^6.4.1",
+      "babel-preset-es2015": "^6.24.0",
+      "babel-preset-react": "^6.23.0",
+      "babel-preset-stage-3": "^6.22.0",
+      "react-leaflet": "^1.7.2",
+      "webpack": "^2.3.2",
+      "webpack-dev-server": "^2.4.2"
+    },
+    "dependencies": {
+      "leaflet": "^1.2.0",
+      "prop-types": "^15.6.0",
+      "react": "^15.6.2",
+      "react-dom": "^15.6.2",
+      "react-redux": "^5.0.6",
+      "redux": "^3.7.2"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
+
+Trace: 
+  Error: https://artifactory.palantir.build/artifactory/api/npm/all-npm/leaflet: ETIMEDOUT
+      at Timeout._onTimeout (/usr/local/Cellar/yarn/1.1.0/libexec/lib/cli.js:122581:19)
+      at ontimeout (timers.js:469:11)
+      at tryOnTimeout (timers.js:304:5)
+      at Timer.listOnTimeout (timers.js:264:5)
