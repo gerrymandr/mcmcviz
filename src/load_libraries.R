@@ -43,6 +43,7 @@ library(sf)
 library(leaflet)
 library(rgdal)
 library(geosphere)
+library(leaflet)
 
 # mcmc tools
 library(redist)

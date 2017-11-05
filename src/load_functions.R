@@ -73,10 +73,10 @@ centroid_dist = function(sf)
     as.matrix()
 }
 
-redistrict = function(geom, nsims, nthin, nburn, ndists, popcons) {
+redistrict = function(geom, nsims, nthin, nburn, ndists, popcons, eprob, lambda) {
   adj_obj = st_relate(geom, pattern = "****1****")
   mcmc = redist.mcmc(adj_obj, geom$population, 
-                     nsims=nsims+nburn, ndists=ndists, popcons=popcons)
+                     nsims=nsims+nburn, ndists=ndists, popcons=popcons, eprob=eprob, lambda=lambda)
   
   mcmc$partitions %>% thin(nsims, nburn, nthin=nthin) %>% as.data.frame() %>% as.list()
 }
