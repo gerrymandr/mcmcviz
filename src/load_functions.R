@@ -71,19 +71,8 @@ centroid_dist = function(sf)
 
 redistrict = function(geom, nsims, nthin, nburn, ndists, popcons, eprob, lambda) {
   adj_obj = st_relate(geom, pattern = "****1****")
-<<<<<<< HEAD
   mcmc = redist.mcmc(adj_obj, geom$population, 
                      nsims=nsims+nburn, ndists=ndists, popcons=popcons, eprob=eprob, lambda=lambda)
-=======
-  mcmc = try({
-    setTimeLimit(cpu=Inf, elapsed=60) # FIXME - This is a bad idea
-    
-    redist.mcmc(adj_obj, geom$population, 
-                     nsims=nsims+nburn, ndists=ndists, popcons=popcons)
-  })
-  stopifnot(!inherits(mcmc, "try-error"))
-  
->>>>>>> 714d04208c3a087a1bf0e91d8362b9805cbcf4d1
   
   mcmc$partitions %>% thin(nsims, nburn, nthin=nthin) %>% as.data.frame() %>% as.list()
 }
