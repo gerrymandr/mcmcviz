@@ -22,7 +22,7 @@ geom$population = runif(25, 150000, 350000)
 # actually run the application
 wd = getwd()
 source(paste0(wd,'/src/load_libraries.R'))
-#source(paste0(wd,'/src/load_data.R'))
+source(paste0(wd,'/src/load_data.R'))
 source(paste0(wd,'/src/load_functions.R'))
 source(paste0(wd,'/src/load_mcmc.R'))
 source(paste0(wd,'/shiny/shiny_ui.R'))

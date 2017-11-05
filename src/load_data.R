@@ -32,7 +32,11 @@ election_2016 = geom %>%
 geom = geom %>% select(id, district = DISTRICT, population = Population)
 
 
+<<<<<<< HEAD
 aa <- geom
+=======
+
+>>>>>>> c44c913b64999af2d70ecef416f8b60ff3e23a0f
 
 
 if (FALSE) {
