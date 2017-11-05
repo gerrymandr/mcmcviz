@@ -18,15 +18,30 @@ vote_props = function(df)
   )
 }
 
-JM_jerry = function(dfs) {
+ordered_prop = function(dfs) {
   n_dist = nrow(dfs[[1]])
   props = map(dfs, vote_props)
-  col_names = paste0("(",seq_len(n_dist),")")
+  col_names = seq_len(n_dist)
   
   list(
     D = map_df(props, ~ pluck(., "D") %>% sort() %>% setNames(col_names) %>% as.list()),
     R = map_df(props, ~ pluck(., "R") %>% sort() %>% setNames(col_names) %>% as.list())
   )
+}
+
+plot_ordered_prop = function(d, party="D")
+{
+  data = d[[party]] %>%
+    mutate(iter = 1:n()) %>%
+    gather(order, value, -iter)
+  
+  medians = data %>% group_by(order) %>% summarize(value = median(value))
+  
+  ggplot(data, aes(x = order, y=value)) +
+    geom_boxplot() +
+    geom_line(data = medians, col="red", aes(group=1), size=1) +
+    labs(x="Rank Order", y=paste0("Vote Prop (",party,")")) + 
+    theme_bw()
 }
 
 
