@@ -41,6 +41,7 @@ library(mapedit)
 library(sf)
 library(leaflet)
 library(rgdal)
+library(geosphere)
 
 # string stuff
 library(stringr)

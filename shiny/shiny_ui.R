@@ -1,3 +1,13 @@
+################################################################################
+# shiny_ui.R                                                                   #
+################################################################################
+# shiny_ui.R specifies the design and layout of the web application run by the #
+# shinyApp() and shiny_server.R functions. this file is the one to modify if   #
+# anyone wants to add in more parameters and options for the user to tune in   #
+# the actual web app                                                           #
+################################################################################
+################################################################################
+
 ui = fluidPage(
   titlePanel("Redistricting Vizualization"),
   h3("Redistricting from the perspective of an MCMC simulator"),
@@ -5,14 +15,16 @@ ui = fluidPage(
     column(3,
            h3("Redistricting Vizualization"), 
            h5("View the process of redistricting through the eyes of a Markov Chain Monte Carlo method"), 
+
+           actionButton("gerrymander", label="Click for gerrymandered state"),
            selectInput("inputtype", "Select input type", choices=c("Grid", "State"), selected="Grid"), 
            conditionalPanel(
              condition="input.inputtype=='State'", 
-             selectInput("state", "Select a state", choices=c("Maryland", "North Carolina"))
+             selectInput("state", "Select a state", choices=c(aa="North Carolina"))
            ), 
            conditionalPanel(
              condition="input.inputtype!='State'",
-             selectInput("grid", "Select an example", choices=c("5x5 Grid", "5x10 Grid"), selected="5x5 Grid")
+             selectInput("grid", "Select an example", choices=c(nyt="5x5 Grid"), selected="5x5 Grid")
            ),
            numericInput("ndistricts", "Number of districts", min=2, value=6), 
            numericInput("nsimulations", "Number of simulatoins", min=1, value=100), 
@@ -43,14 +55,12 @@ ui = fluidPage(
            sliderInput("iter", "Select an iteration to display", min=1, max=length(maps), value=1, 
                        animate=animationOptions(3000,TRUE), width=600), 
            selectInput("showplots", "Show advanced plots", choices=c(show="Yes",hide="No"), selected="Yes"),
-           conditionalPanel(
-           fluidRow(condition= "input$showplots=='Yes'",
+           fluidRow(
               column(8, 
                       plotOutput("trace_plot", width=400, height=600), 
                       plotOutput("density_plot", width=600, height=600)
               )
-             )
-           )
+            )
     ) 
   ) 
 )
