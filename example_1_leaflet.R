@@ -1,12 +1,3 @@
-library(sf)
-library(magrittr)
-library(purrr)
-library(dplyr)
-library(ggplot2)
-library(redist)
-library(leaflet)
-library(rgdal)
-
 nc <- st_read("data/AnneArundelN.shp")
 #nc <- st_read("data/simple_grid.shp")
   

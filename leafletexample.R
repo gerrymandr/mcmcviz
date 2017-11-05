@@ -1,13 +1,3 @@
-library(sf)
-library(magrittr)
-library(purrr)
-library(dplyr)
-library(ggplot2)
-library(redist)
-library(leaflet)
-library(rgdal)
-
-
 
 aa84 <- readOGR("data/AnneArundelN84.shp",
                 layer = "AnneArundelN84", GDAL1_integer64_policy = TRUE)
@@ -27,7 +17,7 @@ m <- leaflet(aa84) %>%
 m
 m %>% clearGroup("cands")
 
-load("aa_example.Rdata")
+load("data/aa_example.Rdata")
 maps
 maps[[1]]$geometry = st_transform(maps[[1]]$geometry,4326)
 maps1 = maps[[1]]

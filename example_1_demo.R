@@ -1,11 +1,3 @@
-library(sf)
-library(magrittr)
-library(purrr)
-library(dplyr)
-library(ggplot2)
-library(redist)
-library(shiny)
-library(parallel)
 
 popvect = nc$Population
 
@@ -15,7 +7,6 @@ nburnin = 100000
 ndists = 3
 popcons = 0.20
 
-source("utility.R")
 
 mcmc = redist.mcmc(adjobj=st_relate(nc, pattern = "****1****"), nc$Population, nsims = nsims+nburnin, ndists=ndists, popcons=popcons, constraint = "compact", ssdmat = centroid_dist(nc)^2, beta=0.1)
 
