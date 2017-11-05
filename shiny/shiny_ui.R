@@ -8,6 +8,16 @@
 ################################################################################
 ################################################################################
 
+grid_choices=c(
+  "10x5 Grid"="simple_grid_wgs84",
+  "5x5 Grid"="simple_grid",
+  "10x10 Grid"="BigGrid2"
+)
+
+choices=c(
+  "Maryland"="AnneArundelN"
+)
+
 ui = fluidPage(
   useShinyjs(),
   titlePanel("Redistricting Vizualization"),
@@ -21,11 +31,11 @@ ui = fluidPage(
            selectInput("inputtype", "Select input type", choices=c("Grid", "State"), selected="Grid"), 
            conditionalPanel(
              condition="input.inputtype=='State'", 
-             selectInput("state", "Select a state", choices=c("Maryland"="AnneArundelN"))
+             selectInput("state", "Select a state", choices=state_choices)
            ), 
            conditionalPanel(
              condition="input.inputtype!='State'",
-             selectInput("grid", "Select an example", choices=c("10x5 Grid"="simple_grid_wgs84"), selected="10x5 Grid")
+             selectInput("grid", "Select an example", choices=grid_choices)
            ),
            sliderInput("ndistricts", "Number of districts", min=2, value=3, max=6), 
            numericInput("nsimulations", "Number of simulations", min=1, value=100, max=100000),
