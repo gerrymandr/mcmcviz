@@ -10,7 +10,6 @@
 
 grid_choices=c(
   "10x5 Grid"="simple_grid_wgs84",
-  "5x5 Grid"="simple_grid",
   "10x10 Grid"="BigGrid2"
 )
 
