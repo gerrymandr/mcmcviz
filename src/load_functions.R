@@ -4,10 +4,6 @@ strip_attrs = function(obj)
   obj
 }
 
-JM_jerry = function(df) {
-}
-
-
 polsby_popper = function(sf) {
   P = st_geometry(sf) %>% map(st_length) %>% map_dbl(sum) %>% strip_attrs()
   A = st_area(st_geometry(sf)) %>% strip_attrs()
@@ -75,8 +71,14 @@ centroid_dist = function(sf)
 
 redistrict = function(geom, nsims, nthin, nburn, ndists, popcons) {
   adj_obj = st_relate(geom, pattern = "****1****")
-  mcmc = redist.mcmc(adj_obj, geom$population, 
+  mcmc = try({
+    setTimeLimit(cpu=Inf, elapsed=60) # FIXME - This is a bad idea
+    
+    redist.mcmc(adj_obj, geom$population, 
                      nsims=nsims+nburn, ndists=ndists, popcons=popcons)
+  })
+  stopifnot(!inherits(mcmc, "try-error"))
+  
   
   mcmc$partitions %>% thin(nsims, nburn, nthin=nthin) %>% as.data.frame() %>% as.list()
 }
