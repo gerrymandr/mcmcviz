@@ -107,12 +107,46 @@ server = function(input, output, session) {
       geom_vline(data=filter(state$metrics, iter==input$iter), aes(xintercept=iter), color="red")
   })
   
+  output$order_plot_2014 = renderPlot({
+    party = "D"
+    
+    prop = state$results_2014[[input$iter]] %>% vote_props() %>% pluck(party)
+    
+    cur = data_frame(
+      district = (1:length(prop))-1,
+      value = prop
+    ) %>%
+      arrange(value) %>%
+      mutate(order = 1:n())
+    
+    state$order_plot_2014 + 
+      labs(title = paste0("2014 Election"), color="district") + 
+      geom_point(data = cur, size=5, aes(color=as.character(district)))
+  })
+  
+  output$order_plot_2016 = renderPlot({
+    party = "D"
+    
+    prop = state$results_2016[[input$iter]] %>% vote_props() %>% pluck(party)
+    
+    cur = data_frame(
+      district = (1:length(prop)) - 1,
+      value = prop
+    ) %>%
+      arrange(value) %>%
+      mutate(order = 1:n())
+    
+    state$order_plot_2016 + 
+      labs(title = paste0("2016 Election"), color="district") + 
+      geom_point(data = cur, size=5, aes(color=as.character(district)))
+  })
   
   output$map = renderPlot({
     if (is.null(state$maps))
       return()
     
-    plot(select(state$maps[[input$iter]], district), main="", key.pos=NULL)
-    plot(st_geometry(state$geom), add=TRUE, border=adjustcolor("black", alpha.f = 0.1))
+    ggplot(state$maps[[input$iter]] %>% select(district)) +
+      geom_sf(aes(fill=district)) +
+      geom_sf(data=state$geom, alpha=0.1, fill=NA)
   })
 }
