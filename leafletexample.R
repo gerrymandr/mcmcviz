@@ -29,13 +29,14 @@ m %>% clearGroup("cands")
 
 load("aa_example.Rdata")
 maps
-maps[[1]]$geometry = st_transform(maps[[1]]$geometry,4326)
-maps1 = maps[[1]]
+maps[[2]]$geometry = st_transform(maps[[1]]$geometry,4326)
+maps1 = maps[[2]]
 
 
-binpal <- colorBin("Greens", maps1$Population, 6, pretty = TRUE)
+#binpal <- colorBin("Greens", maps1$Population, 6, pretty = TRUE)
+factpal <- colorFactor(topo.colors(3), maps1$DISTRICT)
 m %>% addPolygons(data=maps1, group="cands", color = "#444444", weight = 1, smoothFactor = 0.5,
                     opacity = 1.0, fillOpacity = 0.5,
-                    fillColor = ~binpal(Population),
+                    fillColor = ~factpal(DISTRICT),
                     highlightOptions = highlightOptions(color = "white", weight = 2,
                                                         bringToFront = TRUE))
