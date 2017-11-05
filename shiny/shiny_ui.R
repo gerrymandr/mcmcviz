@@ -21,7 +21,7 @@ ui = fluidPage(
            selectInput("inputtype", "Select input type", choices=c("Grid", "State"), selected="Grid"), 
            conditionalPanel(
              condition="input.inputtype=='State'", 
-             selectInput("state", "Select a state", choices=c("Maryland"="AnneArunbdelN"))
+             selectInput("state", "Select a state", choices=c("Maryland"="AnneArundelN"))
            ), 
            conditionalPanel(
              condition="input.inputtype!='State'",

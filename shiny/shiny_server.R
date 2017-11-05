@@ -12,11 +12,15 @@ server = function(input, output, session) {
   shinyjs::hide("iter")
   
   shp_name = reactive({
-    if(input$inputtype=="Shape") {
+    if (input$inputtype=="State") {
+      print("here")
       return(input$state)
     } 
-    else {
+    else if (input$inputtype=="Grid"){
+      print("there")
       return(input$grid)
+    } else {
+      stop()
     }
   })
   
@@ -25,6 +29,7 @@ server = function(input, output, session) {
   observeEvent(input$redistrict, {
     
     shp_file = paste0("data/",shp_name(),".shp")
+    
     geom = st_read(shp_file, quiet = TRUE)
     
     names(geom) = tolower(names(geom))
@@ -83,11 +88,17 @@ server = function(input, output, session) {
     
     state$trace_plot = ggplot(metrics, aes(x=iter,y=value)) + 
       geom_line() + 
-      facet_grid(metric~. ,scales="free_y")
+      facet_grid(metric~. ,scales="free_y") +
+      theme_bw()
     
     state$density_plot = ggplot(metrics, aes(x=value)) + 
       geom_density() +
-      facet_wrap(~metric, scales="free", ncol=3) 
+      facet_wrap(~metric, scales="free", ncol=3) +
+      theme_bw()
+    
+    state$order_plot_2014 = results_2014 %>% ordered_prop() %>% plot_ordered_prop()
+    state$order_plot_2016 = results_2016 %>% ordered_prop() %>% plot_ordered_prop()
+    
     
     shinyjs::show("iter")
   })
