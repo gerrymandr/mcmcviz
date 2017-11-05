@@ -60,7 +60,7 @@ efficiency_gap = function(df)
 
 thin = function(m, nsims=ncol(m), nburn=0, nthin=1)
 {
-  m[,(1:(nsims/nthin))*nthin + nburnin]
+  m[,(1:(nsims/nthin))*nthin + nburn]
 }
 
 centroid_dist = function(sf)
@@ -76,7 +76,7 @@ centroid_dist = function(sf)
 redistrict = function(geom, nsims, nthin, nburnin, ndists, popcons) {
   adj_obj = st_relate(geom, pattern = "****1****")
   mcmc = redist.mcmc(adj_obj, geom$population, 
-                     nsims=nsims+nburnin, ndists=ndists, popcons=popcons)
+                     nsims=nsims+nburn, ndists=ndists, popcons=popcons)
   iters = mcmc$partitions %>% thin(nsims, nburn, nthin=100) %>% as.data.frame() %>% as.list()
   iters
 }
@@ -103,13 +103,14 @@ create_district_map = function(geom, districts)
 }
 
 gather_maps=function(geom, iters) {
-  maps = mclapply(iters,  create_district_map, geom = geom, mc.cores = detectCores())
-  maps
+  mclapply(iters,  create_district_map, geom = geom, mc.cores = detectCores())
 }
 
-gather_metrics = function(iters, maps) {
-  results_2014 = mclapply(iters, create_election_results, df = election_2014, mc.cores = detectCores())
-  results_2016 = mclapply(iters, create_election_results, df = election_2016, mc.cores = detectCores())
+gather_results = function(df, iters) {
+  mclapply(iters, create_election_results, df = df, mc.cores = detectCores())
+}
+
+gather_metrics = function(maps, results_2014, results_2016) {
   
   seats_2014 = map_df(results_2014, seats)
   seats_2016 = map_df(results_2016, seats)
@@ -117,15 +118,13 @@ gather_metrics = function(iters, maps) {
   pop_diff = map_dbl(maps, pop_rmsd)
   polsby = map(maps, polsby_popper)
   
-  metrics = data_frame(
-    iter = seq_along(iters),
+  data_frame(
+    iter = seq_along(maps),
     polsby_min = map_dbl(polsby, min),
     polsby_avg = map_dbl(polsby, mean),
     pop_dff = pop_diff,
     D_seats_2014 = pull(seats_2014, D),
     D_seats_2016 = pull(seats_2016, D)
   ) %>% gather(metric, value, -iter)
-  
-  metrics
 } 
 
