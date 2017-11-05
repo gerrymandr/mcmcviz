@@ -28,7 +28,7 @@ election_2016 = geom %>%
     D_votes = population * (E2016_D / 100)
   )
 
-#geom = geom %>% select(id, district = DISTRICT, population = Population)
+geom = geom %>% rename(district = District, population = Population)
 
 
 
