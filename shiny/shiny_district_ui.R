@@ -16,11 +16,11 @@ ui = fluidPage(
       
       
       actionButton("redistrict", label = "Redistrict randomly"),
-      actionButton("advanced", label = "Show advanced features"),
+      selectInput("advanced", "Advanced", c(Hide="Hide",show="Show")),
       
       # Advanced Features
       conditionalPanel(
-        condition = "true",
+        condition = "input.advanced=='Show'",
         numericInput("n_thin", "Markov Chain Thining", min=1,value=1), 
         sliderInput("e_prob", "Probability of keeping an edge connected", min=0, max=1, value=0.05), 
         numericInput("lambda", "Lambda (number of swaps per step = Poi(lambda) + 1)", min=0,value=0),
@@ -30,9 +30,8 @@ ui = fluidPage(
                                  "compact"=2, 
                                  "population"=3), 
                     selected=1), 
-        selectInput("contiguity_method", "Definition for contiguity", choices=list("Rook"=1, "Queen"=2), selected=1
-                    
-        ), 
+        selectInput("contiguity_method", "Definition for contiguity", choices=list("Rook"=1, "Queen"=2), selected=1),
+        numericInput("n_burnin", "Number of burnin iterations", min=0, value=0)
       )
       
     ),
@@ -44,3 +43,4 @@ ui = fluidPage(
     )
   )
 )
+
