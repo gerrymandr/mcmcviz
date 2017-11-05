@@ -77,6 +77,7 @@ server = function(input, output, session) {
     
     updateSliderInput(session, "iter", max = length(iters), value = 1, step=1)
     
+    state$type = input$inputtype
     state$geom = geom
     state$iters = iters
     state$maps = maps
@@ -97,6 +98,7 @@ server = function(input, output, session) {
     state$order_plot_2014 = results_2014 %>% ordered_prop() %>% plot_ordered_prop()
     state$order_plot_2016 = results_2016 %>% ordered_prop() %>% plot_ordered_prop()
     
+    state$factpal = colorFactor(topo.colors(ndists), as.character(seq_len(ndists)-1))
     
     shinyjs::show("iter")
   })
@@ -113,7 +115,7 @@ server = function(input, output, session) {
       return()
 
     state$density_plot +
-      geom_vline(data=filter(state$metrics, iter==input$iter), aes(xintercept=iter), color="red")
+      geom_vline(data=filter(state$metrics, iter==input$iter), aes(xintercept=value), color="red")
   })
   
   output$order_plot_2014 = renderPlot({
@@ -154,26 +156,18 @@ server = function(input, output, session) {
     if (is.null(state$maps))
       return()
     
-    factpal <- colorFactor(topo.colors(input$ndistricts), as.character(seq_len(input$ndistricts)-1))
-    leaflet() %>%
-      addTiles() %>%
-      addPolygons(data=state$geom, group="cands", color = "#444444", weight = 1, smoothFactor = 0.5,
-                  opacity = 1.0, fillOpacity = 0.5,
-                  fillColor = ~factpal(district),
-                  highlightOptions = highlightOptions(color = "white", weight = 2,
-                                                      bringToFront = TRUE))
-  
+    l = leaflet()
+
+    if (state$type != "Grid")
+      l = l %>% addTiles()
+    
+    g = state$geom  
+    st_geometry(g) = st_transform(st_geometry(g), 4326)
+    
+    l %>%
+      addPolygons(data=g, group="cands", color = "#444444", weight = 1, smoothFactor = 0.5,
+                  opacity = 1.0, fillOpacity = 0.5)
   })
-  
-      
-  # renderPlot({
-  #   if (is.null(state$maps))
-  #     return()
-  #   
-  #   plot(select(state$maps[[input$iter]], district), main="", key.pos=NULL)
-  #   plot(st_geometry(state$geom), add=TRUE, border=adjustcolor("black", alpha.f = 0.1))
-  # })
-  
   
   observe({
     if (is.null(state$maps))
@@ -181,7 +175,7 @@ server = function(input, output, session) {
     
     mapdata = state$maps[[input$iter]]
     factpal <- colorFactor(topo.colors(4), mapdata$district)
-    print("helloworld")
+
     mapdata$geometry = st_transform(st_geometry(mapdata),4326)
     proxy <- leafletProxy("map", data = mapdata) %>%
       addPolygons(data=mapdata, group="cands", color = "#444444", weight = 1, smoothFactor = 0.5,
@@ -199,10 +193,11 @@ server = function(input, output, session) {
     if (is.null(state$maps))
       return()
     
-    click <- input$map_shape_click
+    click = input$map_shape_click
     
     if (is.null(click))
       return()
+    
     pop=numeric()
     dist=click$id
     print(state$maps[[input$iter]])
@@ -212,12 +207,12 @@ server = function(input, output, session) {
         pop = state$maps[[input$iter]]$population[i]
       }
     }
-    proxy <- leafletProxy("map") 
+    proxy = leafletProxy("map") 
     
-    proxy %>% clearMarkers()  %>% clearPopups()
-    pop=toString(pop)
+    proxy %>% clearMarkers() %>% clearPopups()
+    
+    pop = toString(pop)
     poptxt = paste("population =", pop, sep=" ")
     proxy %>% addPopups(click$lng, click$lat,poptxt)
-    
   })
 }

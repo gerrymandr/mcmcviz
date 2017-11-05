@@ -8,6 +8,15 @@
 ################################################################################
 ################################################################################
 
+grid_choices=c(
+  "10x5 Grid"="simple_grid_wgs84",
+  "10x10 Grid"="BigGrid2"
+)
+
+state_choices=c(
+  "Maryland"="AnneArundelN"
+)
+
 ui = fluidPage(
   useShinyjs(),
   titlePanel("Redistricting Vizualization"),
@@ -17,15 +26,16 @@ ui = fluidPage(
            h3("Redistricting Vizualization"), 
            h5("View the process of redistricting through the eyes of a Markov Chain Monte Carlo method"), 
 
-#           actionButton("gerrymander", label="Click for gerrymandered state"),
+           #actionButton("gerrymander", label="Click for gerrymandered state"),
+
            selectInput("inputtype", "Select input type", choices=c("Grid", "State"), selected="Grid"), 
            conditionalPanel(
              condition="input.inputtype=='State'", 
-             selectInput("state", "Select a state", choices=c("Maryland"="AnneArundelN"))
+             selectInput("state", "Select a state", choices=state_choices)
            ), 
            conditionalPanel(
              condition="input.inputtype!='State'",
-             selectInput("grid", "Select an example", choices=c("10x5 Grid"="simple_grid_wgs84"), selected="10x5 Grid")
+             selectInput("grid", "Select an example", choices=grid_choices)
            ),
            sliderInput("ndistricts", "Number of districts", min=2, value=3, max=6), 
            numericInput("nsimulations", "Number of simulations", min=1, value=100, max=100000),
@@ -43,16 +53,16 @@ ui = fluidPage(
                          min = 0, max = 1, value = 0.15)
            )
     ),
-    column(6, offset=1,
-      leafletOutput("map"),
+    column(4,
+      leafletOutput("map", width=400, height=400),
       #plotOutput("map"),
       sliderInput("iter", "Select an iteration to display", min=1, max=1, value=1, 
-                  animate=animationOptions(3000,TRUE), width=900),
+                  animate=animationOptions(500,TRUE), width=900)
     ),
-    column(3, 
+    column(3,
       tabsetPanel(
-        tabPanel("Trace Plots", plotOutput("trace_plot", width=800, height=400)),
-        tabPanel("Density Plots", plotOutput("density_plot", width=800, height=400)),
+        tabPanel("Trace Plots", plotOutput("trace_plot", width=400, height=400)),
+        tabPanel("Density Plots", plotOutput("density_plot", width=400, height=400)),
         tabPanel("Order Plots", 
                   plotOutput("order_plot_2014", width=400, height=400),
                   plotOutput("order_plot_2016", width=400, height=400)
