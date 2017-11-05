@@ -115,7 +115,7 @@ server = function(input, output, session) {
       return()
 
     state$density_plot +
-      geom_vline(data=filter(state$metrics, iter==input$iter), aes(xintercept=iter), color="red")
+      geom_vline(data=filter(state$metrics, iter==input$iter), aes(xintercept=value), color="red")
   })
   
   output$order_plot_2014 = renderPlot({
