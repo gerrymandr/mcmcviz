@@ -1,8 +1,8 @@
 wd = getwd()
 source(paste0(wd,'/src/load_libraries.R'))
-source(paste0(wd,'/src/load_data.R'))
+#source(paste0(wd,'/src/load_data.R'))
 source(paste0(wd,'/src/load_functions.R'))
-source(paste0(wd,'/shiny/shiny_district_ui.R'))
-source(paste0(wd,'/shiny/shiny_district_server.R'))
+source(paste0(wd,'/shiny/shiny_ui.R'))
+source(paste0(wd,'/shiny/shiny_server.R'))
 shinyApp(ui, server)
 
