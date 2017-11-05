@@ -8,8 +8,9 @@ library(shiny)
 library(tidyr)
 library(forcats)
 library(parallel)
+library(leaflet)
 
-geom = st_read("data/simple_grid.shp")
+geom =  st_read("data/simple_grid_wgs84.shp")
 
 election_2014 = geom %>%
   as.data.frame() %>%
@@ -27,7 +28,7 @@ election_2016 = geom %>%
     D_votes = population * (E2016_D / 100)
   )
 
-geom = geom %>% select(id, district = DISTRICT, population = Population)
+#geom = geom %>% select(id, district = DISTRICT, population = Population)
 
 
 
@@ -48,7 +49,7 @@ mcmc = redist.mcmc(
   #constraint = "compact", ssdmat = centroid_dist(geom)^2, beta=1 #FIXME
 )
 
-iters = mcmc$partitions %>% thin(nsims, nburn, nthin=nthin) %>% as.data.frame() %>% as.list()
+iters = mcmc$partitions %>% thin(nsims, nburnin, nthin=nthin) %>% as.data.frame() %>% as.list()
 
 create_election_results = function(df, districts)
 {
@@ -111,16 +112,16 @@ density = ggplot(metrics, aes(x=value)) +
 
 shinyApp(
   ui = fluidPage(
-      fluidRow(
-        column(width=4, plotOutput("plot", width=400, height=400)),
-        column(width=4, plotOutput("trace_plot", width=400, height=600)),
-        column(width=4, plotOutput("density_plot", width=600, height=600))
-      ),
-      fluidRow(
-        column(width=4,
-          sliderInput("iter","Iteration", min = 1, max=length(maps), value=1, animate=animationOptions(1000,TRUE), width = 600)
-        )
+    fluidRow(
+      column(width=4, leafletOutput("map", width = 400, height = 400)),
+      column(width=4, plotOutput("trace_plot", width=400, height=600)),
+      column(width=4, plotOutput("density_plot", width=600, height=600))
+    ),
+    fluidRow(
+      column(width=4,
+             sliderInput("iter","Iteration", min = 1, max=length(maps), value=1, animate=animationOptions(1000,TRUE), width = 600)
       )
+    )
   ),
   server = function(input, output, session)
   {
@@ -129,12 +130,34 @@ shinyApp(
     })
     
     output$trace_plot = renderPlot({
-       trace + geom_vline(data=filter(metrics, iter==input$iter), aes(xintercept=iter), color="red")
+      trace + geom_vline(data=filter(metrics, iter==input$iter), aes(xintercept=iter), color="red")
     })
     
-    output$plot = renderPlot({
-      plot(select(maps[[input$iter]], district), main="", key.pos=NULL)
-      plot(st_geometry(geom), add=TRUE, border=adjustcolor("black", alpha.f = 0.1))
+    output$map = renderLeaflet({
+      nc <- st_read("data/simple_grid_wgs84.shp")
+      factpal <- colorFactor(topo.colors(5), nc$District)
+      leaflet() %>%
+        addTiles() %>%
+        addPolygons(data=nc, group="cands", color = "#444444", weight = 1, smoothFactor = 0.5,
+                    opacity = 1.0, fillOpacity = 0.5,
+                    fillColor = ~factpal(District),
+                    highlightOptions = highlightOptions(color = "white", weight = 2,
+                                                        bringToFront = TRUE))
+    })
+    
+    observe({
+      mapdata = maps[[input$iter]]
+      factpal <- colorFactor(topo.colors(5), mapdata$district)
+      print("helloworld")
+      mapdata$geometry = st_transform(mapdata$geometry,4326)
+      proxy <- leafletProxy("map", data = mapdata) %>%
+        addPolygons(data=mapdata, group="cands", color = "#444444", weight = 1, smoothFactor = 0.5,
+                    opacity = 1.0, fillOpacity = 0.5,
+                    fillColor = ~factpal(district),
+                    highlightOptions = highlightOptions(color = "white", weight = 2,
+                                                        bringToFront = TRUE))
+      
+      
     })
   }
 )
