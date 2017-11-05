@@ -10,6 +10,33 @@
 ################################################################################
 ################################################################################
 
+
+geom <- st_read("data/AnneArundelN.shp")
+
+election_2014 = geom %>%
+  as.data.frame() %>%
+  select(id, population = Population, contains("2014")) %>%
+  mutate(
+    R_votes = population * (E2014_R / 100),
+    D_votes = population * (E2014_D / 100)
+  )
+
+election_2016 = geom %>%
+  as.data.frame() %>%
+  select(id, population = Population, contains("2016")) %>%
+  mutate(
+    R_votes = population * (E2016_R / 100),
+    D_votes = population * (E2016_D / 100)
+  )
+
+geom = geom %>% select(id, district = DISTRICT, population = Population)
+
+
+aa <- geom
+
+
+if (FALSE) {
+
 nytimes = expand.grid(x = 1:5, y = 1:5) %>%
   as.matrix() %>% 
   st_multipoint() %>%
@@ -37,9 +64,9 @@ m <- leaflet(aa84) %>%
               fillColor = ~binpal(Population),
               highlightOptions = highlightOptions(color = "white", weight = 2,
                                                   bringToFront = TRUE))
-load("aa_example.Rdata")
+load("data/aa_example.Rdata")
 
-
+}
 ################################################################################
 ################################################################################
 # This is where colorado data should be loaded in the future                   #
