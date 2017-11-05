@@ -55,22 +55,12 @@ ui = fluidPage(
            sliderInput("iter", "Select an iteration to display", min=1, max=length(maps), value=1, 
                        animate=animationOptions(3000,TRUE), width=600), 
            selectInput("showplots", "Show advanced plots", choices=c(show="Yes",hide="No"), selected="Yes"),
-<<<<<<< HEAD
            fluidRow(
-=======
-           conditionalPanel(
-           fluidRow(condition= "input$showplots=='Yes'",
->>>>>>> c44c913b64999af2d70ecef416f8b60ff3e23a0f
               column(8, 
                       plotOutput("trace_plot", width=400, height=600), 
                       plotOutput("density_plot", width=600, height=600)
               )
-<<<<<<< HEAD
             )
-=======
-             )
-           )
->>>>>>> c44c913b64999af2d70ecef416f8b60ff3e23a0f
     ) 
   ) 
 )
