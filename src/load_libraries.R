@@ -25,6 +25,7 @@
 
 # webapp/ui tools
 library(shiny)
+library(shinyjs)
 
 # data pipelining and org. tools
 library(magrittr)

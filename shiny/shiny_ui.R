@@ -9,6 +9,7 @@
 ################################################################################
 
 ui = fluidPage(
+  useShinyjs(),
   titlePanel("Redistricting Vizualization"),
   h3("Redistricting from the perspective of an MCMC simulator"),
   fluidRow(

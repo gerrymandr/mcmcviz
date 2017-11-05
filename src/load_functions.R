@@ -77,8 +77,8 @@ redistrict = function(geom, nsims, nthin, nburnin, ndists, popcons) {
   adj_obj = st_relate(geom, pattern = "****1****")
   mcmc = redist.mcmc(adj_obj, geom$population, 
                      nsims=nsims+nburn, ndists=ndists, popcons=popcons)
-  iters = mcmc$partitions %>% thin(nsims, nburn, nthin=100) %>% as.data.frame() %>% as.list()
-  iters
+  
+  mcmc$partitions %>% thin(nsims, nburn, nthin=nthin) %>% as.data.frame() %>% as.list()
 }
 
 create_election_results = function(df, districts)
