@@ -3,20 +3,15 @@ ui = fluidPage(
     sidebarPanel(
       h3("Gerrymandering Vizualization"),
       h5("View the results of MCMC redistricting simulations on common shapes and states"),
-      selectInput("ojb", "Object of Interest",
-                  choices=list(
-                    "5 x 5 grid"=1,
-                    "Colorado"=2, 
-                    "Maryland"=3, 
-                    "Ohio"=4),
-                  selected=1), 
+      selectInput("input_type", "Select input type", choice=c(grid="5x5 Grid", shape="Shape File")), 
+      conditionalPanel(
+        condition="input.input_type=='Shape File'",
+        selectInput("file_path", "Select a shape file", choices=files)
+      )
       numericInput("n_districts", "Number of districts:", min = 1, value = 5),
       numericInput("n_simulations", "Number of simulations", min=1, value=100),
-      #wellPanel(uiOutput("district_buttons")),
-      
-      
       actionButton("redistrict", label = "Redistrict randomly"),
-      selectInput("advanced", "Advanced", c(Hide="Hide",show="Show")),
+      selectInput("advanced", "Advanced", c(hide="Hide",show="Show")),
       
       # Advanced Features
       conditionalPanel(
@@ -39,7 +34,8 @@ ui = fluidPage(
     mainPanel(
       h3("Select Grid"),
       plotOutput("map"),
-      selectModUI("selectmap")
+      #selectModUI("selectmap")
+      sliderInput()
     )
   )
 )

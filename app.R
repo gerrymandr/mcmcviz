@@ -13,9 +13,11 @@ library(gganimate)
 
 # load in the ui, functions, and server
 wd = getwd()
-#source(paste0(wd, "/shiny_district_functions.R"))
-source(paste0(wd,'/shiny_district_ui.R'))
-source(paste0(wd,'/shiny_district_server.R'))
+source(paste0(wd,'/src/load_libraries.R'))
+source(paste0(wd,'/src/load_data.R'))
+source(paste0(wd,'/src/load_functions.R'))
+source(paste0(wd,'/shiny/shiny_district_ui.R'))
+source(paste0(wd,'/shiny/shiny_district_server.R'))
 
 
 # actually run the app

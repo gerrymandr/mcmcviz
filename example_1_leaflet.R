@@ -41,3 +41,4 @@ nytimes = expand.grid(x = 1:5, y = 1:5) %>%
 
 adj_mat2 = st_touches(aa, sparse = TRUE)
 adj_mat2
+
