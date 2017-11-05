@@ -52,13 +52,15 @@ ui = fluidPage(
                          min = 0, max = 1, value = 0.15)
            )
     ),
-    column(8, offset=1,
+    column(4,
       leafletOutput("map", width=400, height=400),
       #plotOutput("map"),
       sliderInput("iter", "Select an iteration to display", min=1, max=1, value=1, 
-                  animate=animationOptions(500,TRUE), width=900),
+                  animate=animationOptions(500,TRUE), width=900)
+    ),
+    column(3,
       tabsetPanel(
-        tabPanel("Trace Plots", plotOutput("trace_plot", width=600, height=600)),
+        tabPanel("Trace Plots", plotOutput("trace_plot", width=400, height=400)),
         tabPanel("Density Plots", plotOutput("density_plot", width=400, height=400)),
         tabPanel("Order Plots", 
                   plotOutput("order_plot_2014", width=400, height=400),
