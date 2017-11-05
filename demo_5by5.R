@@ -147,16 +147,44 @@ shinyApp(
     
     observe({
       mapdata = maps[[input$iter]]
-      factpal <- colorFactor(topo.colors(5), mapdata$district)
+      factpal <- colorFactor(topo.colors(4), mapdata$district)
       print("helloworld")
       mapdata$geometry = st_transform(mapdata$geometry,4326)
       proxy <- leafletProxy("map", data = mapdata) %>%
         addPolygons(data=mapdata, group="cands", color = "#444444", weight = 1, smoothFactor = 0.5,
+                    layerId=~district,
                     opacity = 1.0, fillOpacity = 0.5,
                     fillColor = ~factpal(district),
                     highlightOptions = highlightOptions(color = "white", weight = 2,
-                                                        bringToFront = TRUE))
+                                                        bringToFront = TRUE)) 
       
+      
+    })
+    
+    #observe({
+    #  print(names(input))
+    #}
+    #)
+    observeEvent(input$map_shape_click,{
+      click <- input$map_shape_click
+      
+      if (is.null(click))
+        return()
+      pop=numeric()
+      dist=click$id
+      print(maps[[input$iter]])
+      for(i in 1:nrow(maps[[input$iter]])){
+        print(i)
+        if(maps[[input$iter]]$district[i]==click$id){
+          pop = maps[[input$iter]]$population[i]
+        }
+      }
+      proxy <- leafletProxy("map") 
+
+      proxy %>% clearMarkers()
+      pop=toString(pop)
+      poptxt = paste("population =", pop, sep=" ")
+      proxy %>% addPopups(click$lng, click$lat,poptxt)
       
     })
   }
