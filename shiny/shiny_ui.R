@@ -33,16 +33,15 @@ ui = fluidPage(
                 numericInput("n_burnin", "Number of burnin iterations", min=0, value=0)
             )
         ),
-        column(9, 
+        column(8, offset=1,  
             h3("Redistricting Process:"),
             plotOutput("map"),
-            sliderInput("iteration", "Select an iteration to display", min=1, max=1000, value=50),
+            sliderInput("iteration", "Select an iteration to display", min=1, max=length(maps), value=1, 
+            animate=animationOptions(3000,TRUE), width=600),
             fluidRow(
-                column(5,
-                    h4("Current configuration statistics") 
-                ),
-                column(4,
-                    h4("Current configuration in context") 
+                column(8, 
+                    plotOutput("trace_plot", width=400, height=600), 
+                    plotOutput("density_plot", width=600, height=600)
                 )
             )
         ) 

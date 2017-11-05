@@ -5,4 +5,3 @@ source(paste0(wd,'/src/load_functions.R'))
 source(paste0(wd,'/shiny/shiny_ui.R'))
 source(paste0(wd,'/shiny/shiny_server.R'))
 shinyApp(ui, server)
-
