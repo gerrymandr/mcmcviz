@@ -95,7 +95,7 @@ efficiency_gap = function(df)
   )
 }
 
-thin = function(m, nsims=ncol(m), nburn=0, nthin=1)
+thin = function(m, nsims=ncol(m), nburnin=0, nthin=1)
 {
   m[,(1:(nsims/nthin))*nthin + nburnin]
 }
