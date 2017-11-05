@@ -208,7 +208,7 @@ server = function(input, output, session) {
     }
     proxy <- leafletProxy("map") 
     
-    proxy %>% clearMarkers()
+    proxy %>% clearMarkers() %>% clearPopups()
     pop=toString(pop)
     poptxt = paste("population =", pop, sep=" ")
     proxy %>% addPopups(click$lng, click$lat,poptxt)
