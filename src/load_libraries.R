@@ -30,6 +30,7 @@ library(shiny)
 library(magrittr)
 library(purrr)
 library(dplyr)
+library(tidyr)
 
 # general plotting tools
 library(ggplot2)
@@ -44,3 +45,4 @@ library(rgdal)
 
 # mcmc tools
 library(redist)
+library(parallel)

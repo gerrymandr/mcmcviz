@@ -1,80 +1,64 @@
-server = function(input, output, session) {
-  nytimes = expand.grid(x = 1:5, y = 1:5) %>%
-    as.matrix() %>% 
-    st_multipoint() %>%
-    st_sfc() %>%
-    st_cast("POINT") %>%
-    st_make_grid(n = 5,5) %>%
-    st_sf() %>% 
-    mutate(
-      id = 1:n(),
-      district = rep(1:5, rep(5,5))
-    )
-  
-  state = reactiveValues(
-    buttons = list(),
-    observers = list(),
-    geom = nytimes,
-    cur_selected = c()
-  )
-  
-  selector = callModule(
-    selectMod,
-    "selectmap",
-    leaflet() %>%
-      #addTiles() %>%
-      addFeatures(state$geom, layerId = ~state$geom$id)
-  )
-  
-  observeEvent(selector(), {
-    print(selector())
-    state$cur_selected = selector()$id[as.logical(selector()$selected)] 
-  })
-  
-  observeEvent(input$n_districts, {
-    
-    n = input$n_districts
-    stopifnot(n >= 1)
-    
-    # Kill the old buttons
-    if (length(state$observers) != 0)
-      map(state$observers, ~ .$destroy())
-    
-    ids = paste0("add_dist_", 1:n)
-    labels = paste("Add to distrinct", 1:n)
-    
-    state$buttons = map2(ids, labels, actionButton)
-    
-    state$observers = map2(
-      ids, 1:n,
-      function(id, i)
-      {
-        observeEvent(input[[id]], {
-          state$geom$district[state$geom$id %in% state$cur_selected] = i
-        })
-      }
-    )
-    
-    output$district_buttons = renderUI(state$buttons)
-  })
-  
-  
-  output$redistrict = eventReactive(input$redistrict, {
-    
-  })
-  
-  output$advanced = eventReactive(input$advanced, {
-    
-  })
-  
+################################################################################
+# shiny_server.R                                                               #
+################################################################################
+# shiny_server.R function runs all the server side operations to actually do   #
+# the work required to plot things on the screen, render the map, and run the  #
+# functions required to transform button input into action                     #
+################################################################################
+################################################################################
 
-  output$map = renderPlot({
-    dists = state$geom %>% group_by(district) %>% summarize() 
+server = function(input, output, session) {
+  
+  observe({
+    if(input$redistrict > 0) {
+      if(input$inputtype=="Shape") {
+        geom = input$state
+      } 
+      else {
+        geom = input$grid
+      }
+      ndists = input$ndistricts
+      nsims = input$nsimulations
+      nthin = input$nthin
+      nburnin = input$nburnin
+      eprob = input$eprob
+      lambda = input$lambda
+      popcons = input$popcons
+      constraint = input$constraint
+      
+      iter = redistrict(geom, nsims, nthin, nburnin, ndists, popcons)
+      maps = gather_maps(geom, iters)
+      metrics = gather_metrics(iters, maps)
+      
+    }
+  })
+  
+  output$trace_plot=renderPlot({
+    if (input$showplots == 'No') {
+      return()
+    }
     
-    ggplot() +
-      geom_sf(data = dists, aes(fill=as.factor(district))) +
-      geom_sf(data = state$geom, color="black", fill=NA) +
-      theme_bw() +
-      labs(fill="District")
+    ggplot(metrics, aes(x=iter,y=value)) + 
+      geom_line() + 
+      facet_grid(metric~. ,scales="free_y") +
+      geom_vline(data=filter(metrics, iter==input$iteration), aes(xintercept=iter), color="red")
+  })
+  output$density_plot=renderPlot({
+    if (input$showplots == 'No') {
+      return()
+    }
+    
+    metrics=gather_metrics()
+    
+    ggplot(metrics, aes(x=value)) + 
+      geom_line() +
+      facet_grid(metric~., scales="free", ncol=4) +
+      geom_vline(data=filter(metrics, iter=input$iteration), aes(xintercept=iter), color=red)
+  })
+  
+  
+  output$map = renderPlot({
+    plot(select(maps[[input$iter]], district), main="", key.pos=NULL)
+    plot(st_geometry(geom), add=TRUE, border=adjustcolor("black", alpha.f = 0.1))
   })
 }
