@@ -193,10 +193,11 @@ server = function(input, output, session) {
     if (is.null(state$maps))
       return()
     
-    click <- input$map_shape_click
+    click = input$map_shape_click
     
     if (is.null(click))
       return()
+    
     pop=numeric()
     dist=click$id
     print(state$maps[[input$iter]])
@@ -206,10 +207,11 @@ server = function(input, output, session) {
         pop = state$maps[[input$iter]]$population[i]
       }
     }
-    proxy <- leafletProxy("map") 
+    proxy = leafletProxy("map") 
     
     proxy %>% clearMarkers() %>% clearPopups()
-    pop=toString(pop)
+    
+    pop = toString(pop)
     poptxt = paste("population =", pop, sep=" ")
     proxy %>% addPopups(click$lng, click$lat,poptxt)
   })

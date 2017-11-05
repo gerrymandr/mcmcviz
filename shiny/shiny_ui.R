@@ -27,6 +27,7 @@ ui = fluidPage(
            h5("View the process of redistricting through the eyes of a Markov Chain Monte Carlo method"), 
 
            #actionButton("gerrymander", label="Click for gerrymandered state"),
+
            selectInput("inputtype", "Select input type", choices=c("Grid", "State"), selected="Grid"), 
            conditionalPanel(
              condition="input.inputtype=='State'", 
@@ -67,6 +68,6 @@ ui = fluidPage(
                   plotOutput("order_plot_2016", width=400, height=400)
         )
       )
-    ) 
+    )
   ) 
 )
