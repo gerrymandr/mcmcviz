@@ -4,10 +4,6 @@ strip_attrs = function(obj)
   obj
 }
 
-JM_jerry = function(df) {
-}
-
-
 polsby_popper = function(sf) {
   P = st_geometry(sf) %>% map(st_length) %>% map_dbl(sum) %>% strip_attrs()
   A = st_area(st_geometry(sf)) %>% strip_attrs()
@@ -75,8 +71,19 @@ centroid_dist = function(sf)
 
 redistrict = function(geom, nsims, nthin, nburn, ndists, popcons, eprob, lambda) {
   adj_obj = st_relate(geom, pattern = "****1****")
+<<<<<<< HEAD
   mcmc = redist.mcmc(adj_obj, geom$population, 
                      nsims=nsims+nburn, ndists=ndists, popcons=popcons, eprob=eprob, lambda=lambda)
+=======
+  mcmc = try({
+    setTimeLimit(cpu=Inf, elapsed=60) # FIXME - This is a bad idea
+    
+    redist.mcmc(adj_obj, geom$population, 
+                     nsims=nsims+nburn, ndists=ndists, popcons=popcons)
+  })
+  stopifnot(!inherits(mcmc, "try-error"))
+  
+>>>>>>> 714d04208c3a087a1bf0e91d8362b9805cbcf4d1
   
   mcmc$partitions %>% thin(nsims, nburn, nthin=nthin) %>% as.data.frame() %>% as.list()
 }
@@ -128,3 +135,39 @@ gather_metrics = function(maps, results_2014, results_2016) {
   ) %>% gather(metric, value, -iter)
 } 
 
+vote_props = function(df)
+{
+  D = pull(df, D_votes)
+  R = pull(df, R_votes)
+  
+  list(
+    D = D / (D+R),
+    R = R / (D+R)
+  )
+}
+
+ordered_prop = function(dfs) {
+  n_dist = nrow(dfs[[1]])
+  props = map(dfs, vote_props)
+  col_names = seq_len(n_dist)
+  
+  list(
+    D = map_df(props, ~ pluck(., "D") %>% sort() %>% setNames(col_names) %>% as.list()),
+    R = map_df(props, ~ pluck(., "R") %>% sort() %>% setNames(col_names) %>% as.list())
+  )
+}
+
+plot_ordered_prop = function(d, party="D")
+{
+  data = d[[party]] %>%
+    mutate(iter = 1:n()) %>%
+    gather(order, value, -iter)
+  
+  medians = data %>% group_by(order) %>% summarize(value = median(value))
+  
+  ggplot(data, aes(x = order, y=value)) +
+    geom_boxplot() +
+    geom_line(data = medians, col="red", aes(group=1), size=1) +
+    labs(x="Rank Order", y=paste0("Vote Prop (",party,")")) + 
+    theme_bw()
+}
