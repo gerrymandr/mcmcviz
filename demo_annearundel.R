@@ -93,39 +93,43 @@ metrics = data_frame(
   polsby_avg = map_dbl(polsby, mean),
   pop_dff = pop_diff,
   D_seats_2014 = pull(seats_2014, D),
-  D_seats_2016 = pull(seats_2016, D),
-  D_eff_gap_2014 = pull(eff_gap_2014, D),
-  D_eff_gap_2016 = pull(eff_gap_2016, D)
+  D_seats_2016 = pull(seats_2016, D)
+  #D_eff_gap_2014 = pull(eff_gap_2014, D),
+  #D_eff_gap_2016 = pull(eff_gap_2016, D)
 ) %>% gather(metric, value, -iter)
 
 
+trace = ggplot(metrics, aes(x=iter,y=value)) + 
+  geom_line() + 
+  facet_grid(as_factor(metric)~., scales="free_y") +
+  theme_bw()
+
+density = ggplot(metrics, aes(x=value)) + 
+  geom_density() + 
+  facet_wrap(~as_factor(metric), scales="free", ncol = 3) +
+  theme_bw()
+
 shinyApp(
   ui = fluidPage(
-      fluidRow(
-        column(width=4, plotOutput("plot", width=400, height=400)),
-        column(width=4, plotOutput("trace_plot", width=400, height=600)),
-        column(width=4, plotOutput("density_plot", width=600, height=600))
-      ),
-      fluidRow(
-        column(width=4,
-          sliderInput("iter","Iteration", min = 1, max=length(maps), value=1, animate=animationOptions(3000,TRUE), width = 600)
-        )
+    fluidRow(
+      column(width=4, plotOutput("plot", width=400, height=400)),
+      column(width=4, plotOutput("trace_plot", width=400, height=600)),
+      column(width=4, plotOutput("density_plot", width=600, height=600))
+    ),
+    fluidRow(
+      column(width=4,
+             sliderInput("iter","Iteration", min = 1, max=length(maps), value=1, animate=animationOptions(1000,TRUE), width = 600)
       )
+    )
   ),
   server = function(input, output, session)
   {
     output$density_plot = renderPlot({
-      ggplot(metrics, aes(x=value)) + 
-        geom_density() + 
-        facet_wrap(~metric, scales="free", ncol = 4) +
-        geom_vline(data=filter(metrics, iter==input$iter), aes(xintercept=value), color="red")
+      density + geom_vline(data=filter(metrics, iter==input$iter), aes(xintercept=value), color="red")
     })
     
     output$trace_plot = renderPlot({
-      ggplot(metrics, aes(x=iter,y=value)) + 
-        geom_line() + 
-        facet_grid(metric~., scales="free_y") +
-        geom_vline(data=filter(metrics, iter==input$iter), aes(xintercept=iter), color="red")
+      trace + geom_vline(data=filter(metrics, iter==input$iter), aes(xintercept=iter), color="red")
     })
     
     output$plot = renderPlot({
