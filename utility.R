@@ -7,8 +7,26 @@ strip_attrs = function(obj)
   obj
 }
 
-JM_jerry = function(df) {
+vote_props = function(df)
+{
+  D = pull(df, D_votes)
+  R = pull(df, R_votes)
   
+  list(
+    D = D / (D+R),
+    R = R / (D+R)
+  )
+}
+
+JM_jerry = function(dfs) {
+  n_dist = nrow(dfs[[1]])
+  props = map(dfs, vote_props)
+  col_names = paste0("(",seq_len(n_dist),")")
+  
+  list(
+    D = map_df(props, ~ pluck(., "D") %>% sort() %>% setNames(col_names) %>% as.list()),
+    R = map_df(props, ~ pluck(., "R") %>% sort() %>% setNames(col_names) %>% as.list())
+  )
 }
 
 
