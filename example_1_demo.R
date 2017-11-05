@@ -5,31 +5,30 @@ library(dplyr)
 library(ggplot2)
 library(redist)
 library(shiny)
+library(parallel)
 
 popvect = nc$Population
 
-nsims = 10000
+nsims = 100000
 nthin = 100
-nburnin = 10000
+nburnin = 100000
 ndists = 3
 popcons = 0.20
 
 source("utility.R")
 
-ssd = nc %>% 
-  st_geometry() %>% 
-  st_centroid() %>% 
-  st_coordinates() %>% 
-  dist() %>% 
-  as.matrix() %>%
-  {.^2}
+mcmc = redist.mcmc(adjobj=st_relate(nc, pattern = "****1****"), nc$Population, nsims = nsims+nburnin, ndists=ndists, popcons=popcons, constraint = "compact", ssdmat = centroid_dist(nc)^2, beta=0.1)
 
-mcmc = redist.mcmc(adjobj=st_relate(nc, pattern = "****1****"), nc$Population, nsims = nsims+nburnin, ndists=ndists, popcons=popcons, constraint = "compact", ssdmat = ssd, beta=0.1, nthin=1000)
+iters = mcmc$partitions %>% thin(nsims, nburn, nthin=100) %>% as.data.frame() %>% as.list()
 
-iters = mcmc$partitions[,(1:(nsims/nthin))*nthin + nburnin] %>% as.data.frame() %>% as.list()
-
-maps = map(iters, ~ mutate(nc, DISTRICT = as.character(.)) %>% group_by(DISTRICT) %>% summarize(Population = sum(Population), geometry = st_union(geometry)) )
-#save(maps, file="aa_example.Rdata")
+create_districts = function(districts)
+{
+  mutate(nc, DISTRICT = as.character(districts)) %>% 
+    group_by(DISTRICT) %>% 
+    summarize(Population = sum(Population), geometry = st_union(geometry)) 
+}
+maps = mclapply(iters,  create_districts, mc.cores = 4)
+#save(maps, mcmc, file="aa_example.Rdata")
 
 
 polsby = map(maps, polsby_popper)

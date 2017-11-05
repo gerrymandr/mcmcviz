@@ -15,3 +15,17 @@ polsby_popper = function(sf) {
   4 * pi * A / P^2
 }
 
+thin = function(m, nsims=ncol(m), nburn=0, nthin=1)
+{
+  m[,(1:(nsims/nthin))*nthin + nburnin]
+}
+
+centroid_dist = function(sf)
+{
+  sf %>% 
+    st_geometry() %>% 
+    st_centroid() %>% 
+    st_coordinates() %>% 
+    dist() %>% 
+    as.matrix()
+}
