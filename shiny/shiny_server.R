@@ -13,7 +13,6 @@ server = function(input, output, session) {
   
   shp_name = reactive({
     if (input$inputtype=="State") {
-      print("here")
       return(input$state)
     } 
     else if (input$inputtype=="Grid"){
@@ -68,9 +67,9 @@ server = function(input, output, session) {
     #print(paste('Number of edges to swap = Poi(lambda) + 1:', lambda))
     #print(paste('Population contraint percent deviation:', popcons))
     #print(paste('Additional contraint types:', constraint))
-    
+
     geom = geom
-    iters = redistrict(geom, nsims, nthin, nburn, ndists, popcons)
+    iters = redistrict(geom, nsims, nthin, nburn, ndists, popcons, eprob, lambda)
     maps = gather_maps(geom, iters)
     results_2014 = gather_results(election_2014, iters)
     results_2016 = gather_results(election_2016, iters)
@@ -151,12 +150,74 @@ server = function(input, output, session) {
       geom_point(data = cur, size=5, aes(color=as.character(district)))
   })
   
-  output$map = renderPlot({
+  output$map = renderLeaflet({
     if (is.null(state$maps))
       return()
     
-    ggplot(state$maps[[input$iter]] %>% select(district)) +
-      geom_sf(aes(fill=district)) +
-      geom_sf(data=state$geom, alpha=0.1, fill=NA)
+    factpal <- colorFactor(topo.colors(input$ndistricts), as.character(seq_len(input$ndistricts)-1))
+    leaflet() %>%
+      addTiles() %>%
+      addPolygons(data=state$geom, group="cands", color = "#444444", weight = 1, smoothFactor = 0.5,
+                  opacity = 1.0, fillOpacity = 0.5,
+                  fillColor = ~factpal(district),
+                  highlightOptions = highlightOptions(color = "white", weight = 2,
+                                                      bringToFront = TRUE))
+  
+  })
+  
+      
+  # renderPlot({
+  #   if (is.null(state$maps))
+  #     return()
+  #   
+  #   plot(select(state$maps[[input$iter]], district), main="", key.pos=NULL)
+  #   plot(st_geometry(state$geom), add=TRUE, border=adjustcolor("black", alpha.f = 0.1))
+  # })
+  
+  
+  observe({
+    if (is.null(state$maps))
+      return()
+    
+    mapdata = state$maps[[input$iter]]
+    factpal <- colorFactor(topo.colors(4), mapdata$district)
+    print("helloworld")
+    mapdata$geometry = st_transform(st_geometry(mapdata),4326)
+    proxy <- leafletProxy("map", data = mapdata) %>%
+      addPolygons(data=mapdata, group="cands", color = "#444444", weight = 1, smoothFactor = 0.5,
+                  layerId=~district,
+                  opacity = 1.0, fillOpacity = 0.5,
+                  fillColor = ~factpal(district),
+                  highlightOptions = highlightOptions(color = "white", weight = 2,
+                                                      bringToFront = TRUE)) 
+    
+    
+  })
+  
+  
+  observeEvent(input$map_shape_click,{
+    if (is.null(state$maps))
+      return()
+    
+    click <- input$map_shape_click
+    
+    if (is.null(click))
+      return()
+    pop=numeric()
+    dist=click$id
+    print(state$maps[[input$iter]])
+    for(i in 1:nrow(state$maps[[input$iter]])){
+      print(i)
+      if(state$maps[[input$iter]]$district[i]==click$id){
+        pop = state$maps[[input$iter]]$population[i]
+      }
+    }
+    proxy <- leafletProxy("map") 
+    
+    proxy %>% clearMarkers()
+    pop=toString(pop)
+    poptxt = paste("population =", pop, sep=" ")
+    proxy %>% addPopups(click$lng, click$lat,poptxt)
+    
   })
 }
