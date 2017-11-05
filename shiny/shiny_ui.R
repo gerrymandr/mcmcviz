@@ -5,6 +5,7 @@ ui = fluidPage(
     column(3,
            h3("Redistricting Vizualization"), 
            h5("View the process of redistricting through the eyes of a Markov Chain Monte Carlo method"), 
+           actionButton("gerrymander", label="Click for gerrymandered state"),
            selectInput("inputtype", "Select input type", choices=c("Grid", "State"), selected="Grid"), 
            conditionalPanel(
              condition="input.inputtype=='State'", 
@@ -43,14 +44,12 @@ ui = fluidPage(
            sliderInput("iter", "Select an iteration to display", min=1, max=length(maps), value=1, 
                        animate=animationOptions(3000,TRUE), width=600), 
            selectInput("showplots", "Show advanced plots", choices=c(show="Yes",hide="No"), selected="Yes"),
-           conditionalPanel(
-           fluidRow(condition= "input$showplots=='Yes'",
+           fluidRow(
               column(8, 
                       plotOutput("trace_plot", width=400, height=600), 
                       plotOutput("density_plot", width=600, height=600)
               )
-             )
-           )
+            )
     ) 
   ) 
 )
