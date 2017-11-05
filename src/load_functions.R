@@ -73,7 +73,7 @@ centroid_dist = function(sf)
     as.matrix()
 }
 
-redistrict = function(geom, nsims, nthin, nburnin, ndists, popcons) {
+redistrict = function(geom, nsims, nthin, nburn, ndists, popcons) {
   adj_obj = st_relate(geom, pattern = "****1****")
   mcmc = redist.mcmc(adj_obj, geom$population, 
                      nsims=nsims+nburn, ndists=ndists, popcons=popcons)

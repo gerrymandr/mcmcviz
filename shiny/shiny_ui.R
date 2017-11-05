@@ -28,8 +28,7 @@ ui = fluidPage(
              selectInput("grid", "Select an example", choices=c("10x5 Grid"="simple_grid_wgs84"), selected="10x5 Grid")
            ),
            sliderInput("ndistricts", "Number of districts", min=2, value=3, max=6), 
-           numericInput("nsimulations", "Number of simulations", min=1, value=100, max=100000), 
-           numericInput("nburnin", "Number of simulations", min=1, value=100, max=100000), 
+           numericInput("nsimulations", "Number of simulations", min=1, value=100, max=100000),
            numericInput("nthin", "Thinning frequency", min=1, value=1, max=100), 
            actionButton("redistrict", label="Run redistricting simulation", class="btn btn-primary"),
            checkboxInput("advanced", "Show advanced MCMC parameters"), 
@@ -54,7 +53,7 @@ ui = fluidPage(
     ),
     column(3, offset=1,  
       plotOutput("map"),
-      sliderInput("iter", "Select an iteration to display", min=1, max=length(maps), value=1, 
+      sliderInput("iter", "Select an iteration to display", min=1, max=1, value=1, 
                   animate=animationOptions(3000,TRUE), width=400)
     ),
     column(3, offset=5,

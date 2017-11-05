@@ -72,7 +72,7 @@ server = function(input, output, session) {
     results_2016 = gather_results(election_2016, iters)
     metrics = gather_metrics(maps, results_2014, results_2016)
     
-    updateSliderInput(session, "iter", max = length(iters), value = 1)
+    updateSliderInput(session, "iter", max = length(iters), value = 1, step=1)
     
     state$geom = geom
     state$iters = iters
@@ -81,6 +81,14 @@ server = function(input, output, session) {
     state$results_2016 = results_2016
     state$metrics = metrics
     
+    state$trace_plot = ggplot(metrics, aes(x=iter,y=value)) + 
+      geom_line() + 
+      facet_grid(metric~. ,scales="free_y")
+    
+    state$density_plot = ggplot(metrics, aes(x=value)) + 
+      geom_density() +
+      facet_wrap(~metric, scales="free", ncol=3) 
+    
     shinyjs::show("iter")
   })
   
@@ -88,19 +96,15 @@ server = function(input, output, session) {
     if (is.null(state$metrics))
       return()
     
-    ggplot(state$metrics, aes(x=iter,y=value)) + 
-      geom_line() + 
-      facet_grid(metric~. ,scales="free_y") +
+    state$trace_plot +
       geom_vline(data=filter(state$metrics, iter==input$iter), aes(xintercept=iter), color="red")
   })
   output$density_plot=renderPlot({
     if (is.null(state$metrics))
       return()
 
-    ggplot(state$metrics, aes(x=value)) + 
-      geom_line() +
-      facet_grid(metric~., scales="free", ncol=4) +
-      geom_vline(data=filter(state$metrics, iter=input$iter), aes(xintercept=iter), color=red)
+    state$density_plot +
+      geom_vline(data=filter(state$metrics, iter==input$iter), aes(xintercept=iter), color="red")
   })
   
   

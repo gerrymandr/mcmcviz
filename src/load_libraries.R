@@ -44,9 +44,6 @@ library(leaflet)
 library(rgdal)
 library(geosphere)
 
-# string stuff
-library(stringr)
-
 # mcmc tools
 library(redist)
 library(parallel)
