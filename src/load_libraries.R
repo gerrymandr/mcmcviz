@@ -34,7 +34,6 @@ library(tidyr)
 
 # general plotting tools
 library(ggplot2)
-library(gganimate)
 
 # mapping tools
 library(mapview)
@@ -42,6 +41,9 @@ library(mapedit)
 library(sf)
 library(leaflet)
 library(rgdal)
+
+# string stuff
+library(stringr)
 
 # mcmc tools
 library(redist)
