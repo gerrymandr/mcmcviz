@@ -8,6 +8,8 @@ library(shiny)
 library(tidyr)
 library(parallel)
 
+source("utility.R")
+
 geom <- st_read("data/AnneArundelN.shp")
 #nc <- st_read("data/simple_grid.shp")
 
@@ -37,7 +39,7 @@ nburnin = 100000
 ndists = 5
 popcons = 0.10
 
-source("utility.R")
+
 
 adj_obj = st_relate(geom, pattern = "****1****")
 
@@ -87,50 +89,99 @@ eff_gap_2016 = map_df(results_2016, efficiency_gap)
 pop_diff = map_dbl(maps, pop_rmsd)
 polsby = map(maps, polsby_popper)
 
+order_2014 = ordered_prop(results_2014)
+order_2016 = ordered_prop(results_2016)
+
 metrics = data_frame(
   iter = seq_along(iters),
   polsby_min = map_dbl(polsby, min),
   polsby_avg = map_dbl(polsby, mean),
   pop_dff = pop_diff,
   D_seats_2014 = pull(seats_2014, D),
-  D_seats_2016 = pull(seats_2016, D),
-  D_eff_gap_2014 = pull(eff_gap_2014, D),
-  D_eff_gap_2016 = pull(eff_gap_2016, D)
+  D_seats_2016 = pull(seats_2016, D)
+  #D_eff_gap_2014 = pull(eff_gap_2014, D),
+  #D_eff_gap_2016 = pull(eff_gap_2016, D)
 ) %>% gather(metric, value, -iter)
 
+order_plot_2014 = plot_ordered_prop(order_2014)
+order_plot_2016 = plot_ordered_prop(order_2016)
+
+trace_plot = ggplot(metrics, aes(x=iter,y=value)) + 
+  geom_line() + 
+  facet_grid(as_factor(metric)~., scales="free_y") +
+  theme_bw()
+
+density_plot = ggplot(metrics, aes(x=value)) + 
+  geom_density() + 
+  facet_wrap(~as_factor(metric), scales="free", ncol = 3) +
+  theme_bw()
 
 shinyApp(
   ui = fluidPage(
-      fluidRow(
-        column(width=4, plotOutput("plot", width=400, height=400)),
-        column(width=4, plotOutput("trace_plot", width=400, height=600)),
-        column(width=4, plotOutput("density_plot", width=600, height=600))
-      ),
-      fluidRow(
-        column(width=4,
-          sliderInput("iter","Iteration", min = 1, max=length(maps), value=1, animate=animationOptions(3000,TRUE), width = 600)
-        )
+    fluidRow(
+      column(width=4, plotOutput("plot", width=400, height=400)),
+      column(width=4, plotOutput("trace_plot", width=400, height=400)),
+      column(width=4, plotOutput("density_plot", width=400, height=400))
+    ),
+    fluidRow(
+      column(width=4,
+        sliderInput("iter","Iteration", min = 1, max=length(maps), value=1, animate=animationOptions(3000,TRUE), width = 600)
       )
+    ),
+    fluidRow(
+      column(width=4),
+      column(width=4, plotOutput("order_plot_2014", width=400, height=400)),
+      column(width=4, plotOutput("order_plot_2016", width=400, height=400))
+    )
   ),
   server = function(input, output, session)
   {
     output$density_plot = renderPlot({
-      ggplot(metrics, aes(x=value)) + 
-        geom_density() + 
-        facet_wrap(~metric, scales="free", ncol = 4) +
-        geom_vline(data=filter(metrics, iter==input$iter), aes(xintercept=value), color="red")
+      density_plot + geom_vline(data=filter(metrics, iter==input$iter), aes(xintercept=value), color="red")
     })
     
     output$trace_plot = renderPlot({
-      ggplot(metrics, aes(x=iter,y=value)) + 
-        geom_line() + 
-        facet_grid(metric~., scales="free_y") +
-        geom_vline(data=filter(metrics, iter==input$iter), aes(xintercept=iter), color="red")
+      trace_plot + geom_vline(data=filter(metrics, iter==input$iter), aes(xintercept=iter), color="red")
+    })
+    
+    output$order_plot_2014 = renderPlot({
+      party = "D"
+      
+      prop = results_2014[[input$iter]] %>% vote_props() %>% pluck(party)
+      
+      cur = data_frame(
+        district = (1:length(prop))-1,
+        value = prop
+      ) %>%
+        arrange(value) %>%
+        mutate(order = 1:n())
+      
+      order_plot_2014 + 
+        labs(title = paste0("2014 Election"), color="district") + 
+        geom_point(data = cur, size=5, aes(color=as.character(district)))
+    })
+    
+    output$order_plot_2016 = renderPlot({
+      party = "D"
+      
+      prop = results_2016[[input$iter]] %>% vote_props() %>% pluck(party)
+      
+      cur = data_frame(
+        district = (1:length(prop)) - 1,
+        value = prop
+      ) %>%
+        arrange(value) %>%
+        mutate(order = 1:n())
+      
+      order_plot_2016 + 
+        labs(title = paste0("2016 Election"), color="district") + 
+        geom_point(data = cur, size=5, aes(color=as.character(district)))
     })
     
     output$plot = renderPlot({
-      plot(select(maps[[input$iter]], district), main="", key.pos=NULL)
-      plot(st_geometry(geom), add=TRUE, border=adjustcolor("black", alpha.f = 0.1))
+      ggplot(maps[[input$iter]] %>% select(district)) +
+        geom_sf(aes(fill=district)) +
+        geom_sf(data=geom, alpha=0.1, fill=NA)
     })
   }
 )
