@@ -7,31 +7,84 @@ library(redist)
 library(shiny)
 library(parallel)
 
-popvect = nc$Population
+geom <- st_read("data/AnneArundelN.shp")
+#nc <- st_read("data/simple_grid.shp")
+
+election_2014 = geom %>%
+  as.data.frame() %>%
+  select(id, population = Population, contains("2014")) %>%
+  mutate(
+    R_votes = population * (E2014_R / 100),
+    D_votes = population * (E2014_D / 100)
+  )
+  
+election_2016 = geom %>%
+  as.data.frame() %>%
+  select(id, population = Population, contains("2016")) %>%
+  mutate(
+    R_votes = population * (E2016_R / 100),
+    D_votes = population * (E2016_D / 100)
+  )
+
+geom = geom %>% select(id, district = DISTRICT, population = Population)
+
+
 
 nsims = 100000
 nthin = 100
 nburnin = 100000
-ndists = 3
-popcons = 0.20
+ndists = 5
+popcons = 0.10
 
 source("utility.R")
 
-mcmc = redist.mcmc(adjobj=st_relate(nc, pattern = "****1****"), nc$Population, nsims = nsims+nburnin, ndists=ndists, popcons=popcons, constraint = "compact", ssdmat = centroid_dist(nc)^2, beta=0.1)
+adj_obj = st_relate(geom, pattern = "****1****")
+
+mcmc = redist.mcmc(
+  adj_obj, geom$population, 
+  nsims = nsims+nburnin, ndists = ndists, 
+  popcons = popcons
+  #constraint = "compact", ssdmat = centroid_dist(geom)^2, beta=1 #FIXME
+)
 
 iters = mcmc$partitions %>% thin(nsims, nburn, nthin=100) %>% as.data.frame() %>% as.list()
 
-create_districts = function(districts)
+create_election_results = function(df, districts)
 {
-  mutate(nc, DISTRICT = as.character(districts)) %>% 
-    group_by(DISTRICT) %>% 
-    summarize(Population = sum(Population), geometry = st_union(geometry)) 
+  mutate(df, district = as.character(districts)) %>% 
+    group_by(district) %>% 
+    summarize(
+      population = sum(population), 
+      R_votes = sum(R_votes),
+      D_votes = sum(D_votes)
+    ) 
 }
-maps = mclapply(iters,  create_districts, mc.cores = 4)
+
+create_district_map = function(geom, districts)
+{
+  mutate(geom, district = as.character(districts)) %>% 
+    group_by(district) %>% 
+    summarize(
+      population = sum(population), 
+      geometry = st_union(geometry)
+    ) 
+}
+
+maps = mclapply(iters,  create_district_map, geom = geom, mc.cores = detectCores())
+
+results_2014 = mclapply(iters, create_election_results, df = election_2014, mc.cores = detectCores())
+results_2016 = mclapply(iters, create_election_results, df = election_2016, mc.cores = detectCores())
+
 #save(maps, mcmc, file="aa_example.Rdata")
 
+seats_2014 = map_df(results_2014, seats)
+seats_2016 = map_df(results_2016, seats)
 
-polsby = map(maps, polsby_popper)
+eff_gap_2014 = map_df(results_2014, efficiency_gap)
+eff_gap_2016 = map_df(results_2016, efficiency_gap)
+
+pop_diff = map_dbl(maps, pop_rmsd)
+polsby = map_df(maps, polsby_popper)
 
 
 shinyApp(
@@ -42,8 +95,8 @@ shinyApp(
   server = function(input, output, session)
   {
     output$plot = renderPlot({
-      plot(maps[[input$iter]][,"DISTRICT"])
-      plot(st_geometry(nc), add=TRUE, border=adjustcolor("black", alpha.f = 0.1))
+      plot(select(maps[[input$iter]], district))
+      plot(st_geometry(geom), add=TRUE, border=adjustcolor("black", alpha.f = 0.1))
     })
   }
 )
