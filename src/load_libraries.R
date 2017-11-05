@@ -42,6 +42,7 @@ library(mapedit)
 library(sf)
 library(leaflet)
 library(rgdal)
+library(geosphere)
 
 # mcmc tools
 library(redist)

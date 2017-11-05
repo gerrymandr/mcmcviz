@@ -1,3 +1,13 @@
+################################################################################
+# shiny_ui.R                                                                   #
+################################################################################
+# shiny_ui.R specifies the design and layout of the web application run by the #
+# shinyApp() and shiny_server.R functions. this file is the one to modify if   #
+# anyone wants to add in more parameters and options for the user to tune in   #
+# the actual web app                                                           #
+################################################################################
+################################################################################
+
 ui = fluidPage(
   titlePanel("Redistricting Vizualization"),
   h3("Redistricting from the perspective of an MCMC simulator"),
