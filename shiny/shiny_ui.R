@@ -14,7 +14,7 @@ grid_choices=c(
   "10x10 Grid"="BigGrid2"
 )
 
-choices=c(
+state_choices=c(
   "Maryland"="AnneArundelN"
 )
 
