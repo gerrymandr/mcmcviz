@@ -12,11 +12,14 @@ server = function(input, output, session) {
   shinyjs::hide("iter")
   
   shp_name = reactive({
-    if(input$inputtype=="State") {
+    if (input$inputtype=="State") {
       return(input$state)
     } 
-    else {
+    else if (input$inputtype=="Grid"){
+      print("there")
       return(input$grid)
+    } else {
+      stop()
     }
   })
   
@@ -25,6 +28,7 @@ server = function(input, output, session) {
   observeEvent(input$redistrict, {
     
     shp_file = paste0("data/",shp_name(),".shp")
+    
     geom = st_read(shp_file, quiet = TRUE)
     
     names(geom) = tolower(names(geom))
@@ -52,16 +56,17 @@ server = function(input, output, session) {
     eprob = input$eprob
     lambda = input$lambda
     popcons = input$popcons
-
-    print('About to start running a new redistricting simulation with the following parameters')
-    print(paste('Current shape file:', geom))
-    print(paste('Number of districts:', ndists))
-    print(paste('Number of simulations:',nsims))
-    print(paste('Thinning rate for MCMC:', nthin))
-    print(paste('Number of burnin iterations:', nburn))
-    print(paste('Probility of edge swapping:',eprob))
-    print(paste('Number of edges to swap = Poi(lambda) + 1:', lambda))
-    print(paste('Population contraint percent deviation:', popcons))
+    constraint = input$constraint
+      
+    #print('About to start running a new redistricting simulation with the following parameters')
+    #print(paste('Number of districts:', ndists))
+    #print(paste('Number of simulations:',nsims))
+    #print(paste('Thinning rate for MCMC:', nthin))
+    #print(paste('Number of burnin iterations:', nburn))
+    #print(paste('Probility of edge swapping:',eprob))
+    #print(paste('Number of edges to swap = Poi(lambda) + 1:', lambda))
+    #print(paste('Population contraint percent deviation:', popcons))
+    #print(paste('Additional contraint types:', constraint))
 
     geom = geom
     iters = redistrict(geom, nsims, nthin, nburn, ndists, popcons, eprob, lambda)
@@ -81,11 +86,17 @@ server = function(input, output, session) {
     
     state$trace_plot = ggplot(metrics, aes(x=iter,y=value)) + 
       geom_line() + 
-      facet_grid(metric~. ,scales="free_y")
+      facet_grid(metric~. ,scales="free_y") +
+      theme_bw()
     
     state$density_plot = ggplot(metrics, aes(x=value)) + 
       geom_density() +
-      facet_wrap(~metric, scales="free", ncol=3) 
+      facet_wrap(~metric, scales="free", ncol=3) +
+      theme_bw()
+    
+    state$order_plot_2014 = results_2014 %>% ordered_prop() %>% plot_ordered_prop()
+    state$order_plot_2016 = results_2016 %>% ordered_prop() %>% plot_ordered_prop()
+    
     
     shinyjs::show("iter")
   })
@@ -105,6 +116,39 @@ server = function(input, output, session) {
       geom_vline(data=filter(state$metrics, iter==input$iter), aes(xintercept=iter), color="red")
   })
   
+  output$order_plot_2014 = renderPlot({
+    party = "D"
+    
+    prop = state$results_2014[[input$iter]] %>% vote_props() %>% pluck(party)
+    
+    cur = data_frame(
+      district = (1:length(prop))-1,
+      value = prop
+    ) %>%
+      arrange(value) %>%
+      mutate(order = 1:n())
+    
+    state$order_plot_2014 + 
+      labs(title = paste0("2014 Election"), color="district") + 
+      geom_point(data = cur, size=5, aes(color=as.character(district)))
+  })
+  
+  output$order_plot_2016 = renderPlot({
+    party = "D"
+    
+    prop = state$results_2016[[input$iter]] %>% vote_props() %>% pluck(party)
+    
+    cur = data_frame(
+      district = (1:length(prop)) - 1,
+      value = prop
+    ) %>%
+      arrange(value) %>%
+      mutate(order = 1:n())
+    
+    state$order_plot_2016 + 
+      labs(title = paste0("2016 Election"), color="district") + 
+      geom_point(data = cur, size=5, aes(color=as.character(district)))
+  })
   
   output$map = renderLeaflet({
     if (is.null(state$maps))
@@ -176,5 +220,4 @@ server = function(input, output, session) {
     proxy %>% addPopups(click$lng, click$lat,poptxt)
     
   })
-  
 }
