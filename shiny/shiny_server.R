@@ -26,8 +26,6 @@ server = function(input, output, session) {
       popcons = input$popcons
       constraint = input$constraint
       
-<<<<<<< HEAD
-      
       print('About to start running a new redistricting simulation with the following parameters')
       print(paste('Current shape file:', geom))
       print(paste('Number of districts:', ndistricts))
@@ -38,8 +36,7 @@ server = function(input, output, session) {
       print(paste('Number of edges to swap = Poi(lambda) + 1:', lambda))
       print(paste('Population contraint percent deviation:', popcons))
       print(paste('Additional contraint types:', constraint))
-=======
->>>>>>> c44c913b64999af2d70ecef416f8b60ff3e23a0f
+
       iter = redistrict(geom, nsims, nthin, nburnin, ndists, popcons)
       maps = gather_maps(geom, iters)
       metrics = gather_metrics(iters, maps)
