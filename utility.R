@@ -7,6 +7,10 @@ strip_attrs = function(obj)
   obj
 }
 
+JM_jerry = function(df) {
+  
+}
+
 
 polsby_popper = function(sf) {
   P = st_geometry(sf) %>% map(st_length) %>% map_dbl(sum) %>% strip_attrs()
