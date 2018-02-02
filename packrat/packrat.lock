@@ -32,15 +32,18 @@ Requires: lattice
 Package: R.methodsS3
 Source: CRAN
 Version: 1.7.1
+Hash: 99f841ba1614c005e6672c5fb01b352a
 
 Package: R.oo
 Source: CRAN
 Version: 1.21.0
+Hash: d155101c5eb87d728d43e23c6902f4d5
 Requires: R.methodsS3
 
 Package: R.utils
 Source: CRAN
 Version: 2.6.0
+Hash: 7d46f5c3a914a82db092e1404d6ae624
 Requires: R.methodsS3, R.oo
 
 Package: R6
@@ -93,6 +96,7 @@ Hash: 1d661b615b3f5c3f7d0ea02fcf658c02
 Package: brew
 Source: CRAN
 Version: 1.0-6
+Hash: 931f9972deae0f205e1c78a51f33149b
 
 Package: class
 Source: CRAN
@@ -146,6 +150,7 @@ Requires: R6, ggplot2, htmltools, jsonlite, lazyeval, shiny
 Package: debugme
 Source: CRAN
 Version: 1.1.0
+Hash: c233690edd9fa17a63f7c8d83c1ca153
 Requires: crayon
 
 Package: deldir
@@ -200,9 +205,15 @@ Version: 1.4.4
 Hash: 4df5ab2c8c35382dacab75d414da6748
 Requires: codetools, iterators
 
+Package: formatR
+Source: CRAN
+Version: 1.5
+Hash: 258cf79a8dbeedf1c981cdb53837d2af
+
 Package: gdalUtils
 Source: CRAN
 Version: 2.0.1.7
+Hash: 598915498d88cf50d2072e2db5841189
 Requires: R.utils, foreach, raster, rgdal, sp
 
 Package: gdata
@@ -214,6 +225,7 @@ Requires: gtools
 Package: gdtools
 Source: CRAN
 Version: 0.1.6
+Hash: 3a00c20050faf9bb424d5e35ae509aca
 Requires: Rcpp, withr
 
 Package: geosphere
@@ -309,6 +321,7 @@ Requires: RColorBrewer, base64enc, crosstalk, htmltools, htmlwidgets,
 Package: leaflet.extras
 Source: CRAN
 Version: 0.2
+Hash: 6f328f2fd2a08bb66d5bcd2cedea0a72
 Requires: htmltools, htmlwidgets, leaflet, magrittr, shiny, stringr
 
 Package: magrittr
@@ -319,12 +332,14 @@ Hash: bdc4d48c3135e8f3b399536ddf160df4
 Package: mapedit
 Source: CRAN
 Version: 0.3.2
+Hash: 20346951cb53df36311a07098c85910a
 Requires: dplyr, htmltools, htmlwidgets, jsonlite, leaflet,
     leaflet.extras, mapview, miniUI, sf, shiny
 
 Package: mapview
 Source: CRAN
 Version: 2.3.0
+Hash: ef7c53259e5ceee2d215fb090124d5d8
 Requires: Rcpp, base64enc, brew, gdalUtils, htmltools, htmlwidgets,
     lattice, leaflet, png, raster, satellite, scales, sf, sp, svglite,
     uuid, viridisLite, webshot
@@ -393,6 +408,7 @@ Hash: 421d7d6e0fb4bd885ecbd909b6456b8b
 Package: processx
 Source: CRAN
 Version: 2.0.0.1
+Hash: cfb7e4911fb7451f16f812580571652f
 Requires: R6, assertthat, crayon, debugme
 
 Package: purrr
@@ -422,6 +438,7 @@ Requires: Rcpp, plyr, stringr
 Package: rgdal
 Source: CRAN
 Version: 1.2-16
+Hash: ad2a54287fe1f3bfc141ef5b792e5896
 Requires: sp
 
 Package: rlang
@@ -432,6 +449,7 @@ Hash: 8eb4b2dce38b8f663cb9364b28eaa76b
 Package: satellite
 Source: CRAN
 Version: 1.0.1
+Hash: 466b0cd5fcd7a9ddf18dcc9b88a92b48
 Requires: Rcpp, plyr, raster
 
 Package: scales
@@ -497,6 +515,7 @@ Requires: magrittr, stringi
 Package: svglite
 Source: CRAN
 Version: 1.2.1
+Hash: 3f3a543883c50ecaca42a373fcab6207
 Requires: BH, Rcpp, gdtools
 
 Package: tibble
@@ -537,6 +556,7 @@ Hash: a2fe6a996668ee5850b7719f365e831b
 Package: uuid
 Source: CRAN
 Version: 0.1-2
+Hash: 69acbbcf4dcff3a258f94de540214001
 
 Package: viridis
 Source: CRAN
@@ -552,6 +572,7 @@ Hash: 10f0c25af3dc84eaae10f5854f47efdb
 Package: webshot
 Source: CRAN
 Version: 0.5.0
+Hash: 5f3174d4a88c04e8f1a1fb1a7805fd4b
 Requires: jsonlite, magrittr, processx, withr
 
 Package: withr
