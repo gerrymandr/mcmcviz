@@ -1,7 +1,8 @@
 PackratFormat: 1.4
 PackratVersion: 0.4.8.1
 RVersion: 3.4.2
-Repos: CRAN=https://cloud.r-project.org/
+Repos: CRAN=https://cloud.r-project.org/,
+    nowosaddrat=https://nowosad.github.io/drat/
 
 Package: BH
 Source: CRAN
@@ -334,6 +335,12 @@ Source: CRAN
 Version: 0.2
 Hash: 6f328f2fd2a08bb66d5bcd2cedea0a72
 Requires: htmltools, htmlwidgets, leaflet, magrittr, shiny, stringr
+
+Package: lwgeom
+Source: CRAN
+Version: 0.1-4
+Hash: 5e165e289a4bef7f76b3f8ee1b57ce5b
+Requires: Rcpp, sf, units
 
 Package: magrittr
 Source: CRAN
