@@ -143,8 +143,8 @@ gather_metrics <- function(maps, results_2014, results_2016)
              polsby_avg = map_dbl(polsby, mean), 
              pop_dff = pop_diff,
              D_seats_2014 = pull(seats_2014, D), 
-             D_seats_2016 = pull(seats_2016, D)) 
-  %>% gather(metric, value, -iter)
+             D_seats_2016 = pull(seats_2016, D)) %>% 
+    gather(metric, value, -iter)
 }
 
 vote_props <- function(df)
