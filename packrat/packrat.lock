@@ -153,6 +153,11 @@ Version: 1.0.0
 Hash: c13adea5906fbe2becfcb5f843b26749
 Requires: R6, ggplot2, htmltools, jsonlite, lazyeval, shiny
 
+Package: curl
+Source: CRAN
+Version: 3.1
+Hash: 877149b42d479b93ab15d5cef46c0f1b
+
 Package: debugme
 Source: CRAN
 Version: 1.1.0
@@ -163,6 +168,13 @@ Package: deldir
 Source: CRAN
 Version: 0.1-14
 Hash: d898ea6cb91aaf629f785aa898b6e72f
+
+Package: devtools
+Source: CRAN
+Version: 1.13.4
+Hash: 80a77b22f641002c7ce0343baeaee300
+Requires: digest, git2r, httr, jsonlite, memoise, rstudioapi, whisker,
+    withr
 
 Package: dichromat
 Source: CRAN
@@ -247,6 +259,11 @@ Hash: 46e5cb78836848aa44655e577433f54b
 Requires: MASS, digest, gtable, lazyeval, plyr, reshape2, scales,
     tibble
 
+Package: git2r
+Source: CRAN
+Version: 0.21.0
+Hash: 64747922e287be74e8e8b46c107fd3ef
+
 Package: glue
 Source: CRAN
 Version: 1.2.0
@@ -297,6 +314,12 @@ Source: CRAN
 Version: 1.3.5
 Hash: e84ff210704225e98da111beaa238472
 Requires: Rcpp
+
+Package: httr
+Source: CRAN
+Version: 1.3.1
+Hash: 2d32e01e53d532c812052e27a1021441
+Requires: R6, curl, jsonlite, mime, openssl
 
 Package: iterators
 Source: CRAN
@@ -368,6 +391,12 @@ Version: 0.8
 Hash: 045d7c594d503b41f1c28946d076c8aa
 Requires: mime
 
+Package: memoise
+Source: CRAN
+Version: 1.1.0
+Hash: 410fcd334bc626db100237cc1370f2e9
+Requires: digest
+
 Package: mime
 Source: CRAN
 Version: 0.5
@@ -390,6 +419,11 @@ Source: CRAN
 Version: 3.1-131
 Hash: 7f5580f9c481d6921298f224c391b308
 Requires: lattice
+
+Package: openssl
+Source: CRAN
+Version: 0.9.9
+Hash: 3858537ac10388a5db1687450908f257
 
 Package: packrat
 Source: CRAN
@@ -470,6 +504,11 @@ Version: 1.3-2
 Hash: a25c3f70c166fb3fbabc410eb32b6366
 Requires: backports
 
+Package: rstudioapi
+Source: CRAN
+Version: 0.7
+Hash: e2ebaff8160aff3e6b32e6e78a693c2d
+
 Package: satellite
 Source: CRAN
 Version: 1.0.1
@@ -501,6 +540,15 @@ Source: CRAN
 Version: 1.0
 Hash: ea95f751025e50227a96100be35e970b
 Requires: digest, htmltools, jsonlite, shiny
+
+Package: skeletor
+Source: github
+Version: 1.0.5
+Hash: 289f35292b273cf8e50cbde6bf6cd111
+GithubRepo: skeletor
+GithubUsername: nealrichardson
+GithubRef: master
+GithubSha1: 34fb4e2481543bb5e9ca3a7a7ee8fdd44903a78b
 
 Package: sourcetools
 Source: CRAN
@@ -598,6 +646,11 @@ Source: CRAN
 Version: 0.5.0
 Hash: 5f3174d4a88c04e8f1a1fb1a7805fd4b
 Requires: jsonlite, magrittr, processx, withr
+
+Package: whisker
+Source: CRAN
+Version: 0.3-2
+Hash: 803d662762e532705c2c066a82d066e7
 
 Package: withr
 Source: CRAN
