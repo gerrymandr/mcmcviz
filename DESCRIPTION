@@ -13,10 +13,13 @@ License: File LICENSE
 Depends:
     R (>= 3.0.0)
 Imports:
-Suggests:
-    covr,
-    knitr,
-    testthat
+    tidyverse,
+    sp,
+    shiny,
+    shinyjs,
+    geosphere,
+    rgdal
+Suggests: 
 RoxygenNote: 6.0.1
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
