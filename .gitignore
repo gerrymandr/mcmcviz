@@ -7,7 +7,6 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
-
 **/build
 **/node_modules
 **/npm-debug.log
@@ -15,3 +14,4 @@ Thumbs.db
 .Rhistory
 packrat/lib*/
 packrat/src/
+mcmcviz_0.1.0.tar.gz
