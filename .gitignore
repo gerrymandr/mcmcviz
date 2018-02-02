@@ -8,9 +8,10 @@
 ehthumbs.db
 Thumbs.db
 
-
 **/build
 **/node_modules
 **/npm-debug.log
 .Rproj.user
 .Rhistory
+packrat/lib*/
+packrat/src/
