@@ -4,10 +4,24 @@ strip_attrs <- function(obj)
   obj
 }
 
+#' Calculate the Polsby-Popper compactness score
+#'
+#' https://en.wikipedia.org/wiki/Polsby-Popper_Test
+#' @param sf 
+#'
+#' @return The Polsby-Popper compactness score of the districting plan.
+#' @export
+#'
+#' @examples
 polsby_popper <- function(sf)
 {
-  P <- st_geometry(sf) %>% map(st_length) %>% map_dbl(sum) %>% strip_attrs()
-  A <- st_area(st_geometry(sf)) %>% strip_attrs()
+  P <- st_geometry(sf) %>% 
+    map(st_length) %>% 
+    map_dbl(sum) %>% 
+    strip_attrs()
+  
+  A <- st_area(st_geometry(sf)) %>% 
+    strip_attrs()
   
   4 * pi * A/P^2
 }
@@ -33,6 +47,15 @@ seats <- function(df)
 }
 
 
+#' Calculate the Efficiency Gap of a districting plan
+#' https://ballotpedia.org/Efficiency_gap
+#'
+#' @param df 
+#'
+#' @return The Efficency Gap of the districting plan.
+#' @export
+#'
+#' @examples
 efficiency_gap <- function(df)
 {
   R_votes <- pull(df, R_votes)
@@ -54,9 +77,21 @@ thin <- function(m, nsims = ncol(m), nburn = 0, nthin = 1)
   m[, (1:(nsims/nthin)) * nthin + nburn]
 }
 
+#' Compute distances between centroids
+#'
+#' @param sf 
+#'
+#' @return A distance matrix representing the pairwise distances between centroids.
+#' @export 
+#'
+#' @examples
 centroid_dist <- function(sf)
 {
-  sf %>% st_geometry() %>% st_centroid() %>% st_coordinates() %>% dist() %>% 
+  sf %>% 
+    st_geometry() %>% 
+    st_centroid() %>% 
+    st_coordinates() %>% 
+    dist() %>% 
     as.matrix()
 }
 
