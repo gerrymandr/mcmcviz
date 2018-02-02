@@ -72,6 +72,11 @@ Source: CRAN
 Version: 0.2.0
 Hash: e8805df54c65ac96d50235c44a82615c
 
+Package: backports
+Source: CRAN
+Version: 1.1.2
+Hash: 5ae7b3466e529e4400951ca18c137e40
+
 Package: base64enc
 Source: CRAN
 Version: 0.1-3
@@ -268,6 +273,12 @@ Source: CRAN
 Version: 3.5.0
 Hash: 471b2e2452dfb30fdc1dd6f1b567925a
 
+Package: here
+Source: CRAN
+Version: 0.1
+Hash: 90e1a97508a0d7383b0eeb11e397e763
+Requires: rprojroot
+
 Package: htmltools
 Source: CRAN
 Version: 0.3.6
@@ -445,6 +456,12 @@ Package: rlang
 Source: CRAN
 Version: 0.1.6
 Hash: 8eb4b2dce38b8f663cb9364b28eaa76b
+
+Package: rprojroot
+Source: CRAN
+Version: 1.3-2
+Hash: a25c3f70c166fb3fbabc410eb32b6366
+Requires: backports
 
 Package: satellite
 Source: CRAN

@@ -1,7 +1,8 @@
-source("src/load_libraries.R")
-source("src/load_functions.R")
+library(here)
+source(here("R", "load_libraries.R"))
+source(here("R", "load_functions.R"))
 
-source("shiny/shiny_ui.R")
-source("shiny/shiny_server.R")
+source(here("shiny", "shiny_ui.R"))
+source(here("shiny", "shiny_server.R"))
 
 shinyApp(ui, server)
