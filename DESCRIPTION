@@ -18,7 +18,11 @@ Imports:
     shiny,
     shinyjs,
     geosphere,
-    rgdal
+    rgdal,
+    leaflet,
+    redist,
+    parallel,
+    mapedit
 Suggests: 
 RoxygenNote: 6.0.1
 Roxygen: list(markdown = TRUE)
