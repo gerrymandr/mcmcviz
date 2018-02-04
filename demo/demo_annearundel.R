@@ -7,13 +7,13 @@ library(redist)
 library(shiny)
 library(tidyr)
 library(parallel)
+library(here)
 
-source("utility.R")
+source(here("R", "load_functions.R"))
 
-geom <- st_read("data/AnneArundelN.shp")
-#nc <- st_read("data/simple_grid.shp")
+geom <- st_read(here("data", "AnneArundelN.shp"))
 
-election_2014 = geom %>%
+election_2014 <- geom %>%
   as.data.frame() %>%
   select(id, population = Population, contains("2014")) %>%
   mutate(
@@ -21,7 +21,7 @@ election_2014 = geom %>%
     D_votes = population * (E2014_D / 100)
   )
 
-election_2016 = geom %>%
+election_2016 <- geom %>%
   as.data.frame() %>%
   select(id, population = Population, contains("2016")) %>%
   mutate(
@@ -29,30 +29,31 @@ election_2016 = geom %>%
     D_votes = population * (E2016_D / 100)
   )
 
-geom = geom %>% select(id, district = DISTRICT, population = Population)
+geom = geom %>% 
+  select(id, district = DISTRICT, 
+         population = Population)
 
+nsims <- 100000
+nthin <- 100
+nburnin <- 100000
+ndists <- 5
+popcons <- 0.10
 
+adj_obj <- st_relate(geom, pattern = "****1****")
 
-nsims = 100000
-nthin = 100
-nburnin = 100000
-ndists = 5
-popcons = 0.10
-
-
-
-adj_obj = st_relate(geom, pattern = "****1****")
-
-mcmc = redist.mcmc(
-  adj_obj, geom$population, 
+mcmc <- redist.mcmc(
+  adj_obj,
+  geom$population, 
   nsims = nsims+nburnin, ndists = ndists, 
   popcons = popcons
-  #constraint = "compact", ssdmat = centroid_dist(geom)^2, beta=1 #FIXME
 )
 
-iters = mcmc$partitions %>% thin(nsims, nburn, nthin=100) %>% as.data.frame() %>% as.list()
+iters <- mcmc$partitions %>% 
+  thin(nsims, nburn, nthin=100) %>% 
+  as.data.frame() %>% 
+  as.list()
 
-create_election_results = function(df, districts)
+create_election_results <- function(df, districts)
 {
   mutate(df, district = as.character(districts)) %>% 
     group_by(district) %>% 
@@ -63,7 +64,7 @@ create_election_results = function(df, districts)
     ) 
 }
 
-create_district_map = function(geom, districts)
+create_district_map <- function(geom, districts)
 {
   mutate(geom, district = as.character(districts)) %>% 
     group_by(district) %>% 
@@ -73,45 +74,42 @@ create_district_map = function(geom, districts)
     ) 
 }
 
-maps = mclapply(iters,  create_district_map, geom = geom, mc.cores = detectCores())
+maps <- mclapply(iters,  create_district_map, geom = geom, mc.cores = detectCores())
 
-results_2014 = mclapply(iters, create_election_results, df = election_2014, mc.cores = detectCores())
-results_2016 = mclapply(iters, create_election_results, df = election_2016, mc.cores = detectCores())
+results_2014 <- mclapply(iters, create_election_results, df = election_2014, mc.cores = detectCores())
+results_2016 <- mclapply(iters, create_election_results, df = election_2016, mc.cores = detectCores())
 
-#save(maps, mcmc, file="aa_example.Rdata")
+seats_2014 <- map_df(results_2014, seats)
+seats_2016 <- map_df(results_2016, seats)
 
-seats_2014 = map_df(results_2014, seats)
-seats_2016 = map_df(results_2016, seats)
+eff_gap_2014 <- map_df(results_2014, efficiency_gap)
+eff_gap_2016 <- map_df(results_2016, efficiency_gap)
 
-eff_gap_2014 = map_df(results_2014, efficiency_gap)
-eff_gap_2016 = map_df(results_2016, efficiency_gap)
+pop_diff <- map_dbl(maps, pop_rmsd)
+polsby <- map(maps, polsby_popper)
 
-pop_diff = map_dbl(maps, pop_rmsd)
-polsby = map(maps, polsby_popper)
+order_2014 <- ordered_prop(results_2014)
+order_2016 <- ordered_prop(results_2016)
 
-order_2014 = ordered_prop(results_2014)
-order_2016 = ordered_prop(results_2016)
-
-metrics = data_frame(
+metrics <- data_frame(
   iter = seq_along(iters),
   polsby_min = map_dbl(polsby, min),
   polsby_avg = map_dbl(polsby, mean),
   pop_dff = pop_diff,
   D_seats_2014 = pull(seats_2014, D),
   D_seats_2016 = pull(seats_2016, D)
-  #D_eff_gap_2014 = pull(eff_gap_2014, D),
-  #D_eff_gap_2016 = pull(eff_gap_2016, D)
-) %>% gather(metric, value, -iter)
+) %>% 
+  gather(metric, value, -iter)
 
-order_plot_2014 = plot_ordered_prop(order_2014)
-order_plot_2016 = plot_ordered_prop(order_2016)
+order_plot_2014 <- plot_ordered_prop(order_2014)
+order_plot_2016 <- plot_ordered_prop(order_2016)
 
-trace_plot = ggplot(metrics, aes(x=iter,y=value)) + 
+trace_plot <- ggplot(metrics, aes(x=iter,y=value)) + 
   geom_line() + 
   facet_grid(as_factor(metric)~., scales="free_y") +
   theme_bw()
 
-density_plot = ggplot(metrics, aes(x=value)) + 
+density_plot <- ggplot(metrics, aes(x=value)) + 
   geom_density() + 
   facet_wrap(~as_factor(metric), scales="free", ncol = 3) +
   theme_bw()
