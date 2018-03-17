@@ -85,15 +85,35 @@ server = function(input, output, session) {
     state$results_2016 = results_2016
     state$metrics = metrics
     
+    # state$trace_plot = ggplot(metrics, aes(x=iter,y=value)) + 
+    #   geom_line() + 
+    #   facet_grid(metric~. ,scales="free_y") +
+    #   theme_bw()
     state$trace_plot = ggplot(metrics, aes(x=iter,y=value)) + 
       geom_line() + 
-      facet_grid(metric~. ,scales="free_y") +
+      facet_wrap(~metric ,scales="free_y",ncol=2) +
       theme_bw()
-    
+
+    # state$trace_plot1 = ggplot(metrics1, aes(x=iter,y=value)) +
+    #   geom_line() +
+    #   facet_grid(metric~. ,scales="free_y") +
+    #   theme_bw()
+    # 
+    # state$trace_plot2 = ggplot(metrics2, aes(x=iter,y=value)) +
+    #   geom_line() +
+    #   facet_grid(metric~. ,scales="free_y") +
+    #   theme_bw()
+    # 
+    # state$trace_plot3 = ggplot(metrics3, aes(x=iter,y=value)) +
+    #   geom_line() +
+    #   facet_grid(metric~. ,scales="free_y") +
+    #   theme_bw()
+
     state$density_plot = ggplot(metrics, aes(x=value)) + 
       geom_density() +
-      facet_wrap(~metric, scales="free", ncol=3) +
+      facet_wrap(~metric, scales="free", ncol=2) +
       theme_bw()
+    
     
     state$order_plot_2014 = results_2014 %>% ordered_prop() %>% plot_ordered_prop()
     state$order_plot_2016 = results_2016 %>% ordered_prop() %>% plot_ordered_prop()
@@ -118,6 +138,43 @@ server = function(input, output, session) {
       geom_vline(data=filter(state$metrics, iter==input$iter), aes(xintercept=value), color="red")
   })
   
+  output$order_plot=renderPlot({
+    
+    party = "D"
+    
+    prop = state$results_2014[[input$iter]] %>% vote_props() %>% pluck(party)
+    
+    cur = data_frame(
+      district = (1:length(prop))-1,
+      value = prop
+    ) %>%
+      arrange(value) %>%
+      mutate(order = 1:n())
+    
+    prop2 = state$results_2016[[input$iter]] %>% vote_props() %>% pluck(party)
+    
+    cur2 = data_frame(
+      district = (1:length(prop)) - 1,
+      value = prop
+    ) %>%
+      arrange(value) %>%
+      mutate(order = 1:n())
+    
+    g1=state$order_plot_2014 + 
+      labs(title = paste0("2014 Election"), color="district") + 
+      geom_point(data = cur, size=5, aes(color=as.character(district)))+ylim(min(min(cur$value),min(cur2$value)),max(max(cur$value),max(cur2$value)))
+
+    
+   
+    
+    g2=state$order_plot_2016 + 
+      labs(title = paste0("2016 Election"), color="district") + 
+      geom_point(data = cur, size=5, aes(color=as.character(district)))+ylim(min(min(cur$value),min(cur2$value)),max(max(cur$value),max(cur2$value)))
+    
+    require(gridExtra)
+    grid.arrange(g1,g2,ncol=2)
+  })
+  
   output$order_plot_2014 = renderPlot({
     party = "D"
     
@@ -130,7 +187,7 @@ server = function(input, output, session) {
       arrange(value) %>%
       mutate(order = 1:n())
     
-    state$order_plot_2014 + 
+    g1=state$order_plot_2014 + 
       labs(title = paste0("2014 Election"), color="district") + 
       geom_point(data = cur, size=5, aes(color=as.character(district)))
   })
@@ -147,7 +204,7 @@ server = function(input, output, session) {
       arrange(value) %>%
       mutate(order = 1:n())
     
-    state$order_plot_2016 + 
+    g2=state$order_plot_2016 + 
       labs(title = paste0("2016 Election"), color="district") + 
       geom_point(data = cur, size=5, aes(color=as.character(district)))
   })
