@@ -65,7 +65,7 @@ ui = fluidPage(
                  plotOutput("trace_plot2", width=300, height=400),
                  plotOutput("trace_plot3", width=300, height=400)),
         tabPanel("Density Plots", plotOutput("density_plot", width=400, height=400)),
-        tabPanel("Order Plots", plotOutput("order_plot",width=300, height=400)
+        tabPanel("Order Plots", plotOutput("order_plot",width=400, height=400)
         )
       )
     )

@@ -202,7 +202,7 @@ server = function(input, output, session) {
       labs(title = paste0("2016 Election"), color="district") + 
       geom_point(data = cur, size=5, aes(color=as.character(district)))+ylim(min(min(cur$value),min(cur2$value)),max(max(cur$value),max(cur2$value)))
     
-    require(gridExtra)
+
     grid.arrange(g1,g2,ncol=2)
   })
   
