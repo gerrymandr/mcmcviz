@@ -61,11 +61,11 @@ ui = fluidPage(
     ),
     column(3,
       tabsetPanel(
-        tabPanel("Trace Plots", plotOutput("trace_plot", width=400, height=400)),
+        tabPanel("Trace Plots", plotOutput("trace_plot1", width=300, height=400),
+                 plotOutput("trace_plot2", width=300, height=400),
+                 plotOutput("trace_plot3", width=300, height=400)),
         tabPanel("Density Plots", plotOutput("density_plot", width=400, height=400)),
-        tabPanel("Order Plots", plotOutput("order_plot",width=400, height=400)#,#))
-                  #plotOutput("order_plot_2014", width=400, height=400),
-                  #plotOutput("order_plot_2016", width=400, height=400)
+        tabPanel("Order Plots", plotOutput("order_plot",width=300, height=400)
         )
       )
     )

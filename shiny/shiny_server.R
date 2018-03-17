@@ -89,25 +89,40 @@ server = function(input, output, session) {
     #   geom_line() + 
     #   facet_grid(metric~. ,scales="free_y") +
     #   theme_bw()
-    state$trace_plot = ggplot(metrics, aes(x=iter,y=value)) + 
-      geom_line() + 
-      facet_wrap(~metric ,scales="free_y",ncol=2) +
+    # state$trace_plot = ggplot(metrics, aes(x=iter,y=value)) + 
+    #   geom_line() + 
+    #   facet_wrap(~metric ,scales="free_y",ncol=2) +
+    #   theme_bw()
+    
+    metrics1=subset(metrics,metric%in%c("D_seats_2014","D_seats_2016"))
+    metrics2=subset(metrics,metric%in%c("polsby_min","polsby_avg"))
+    metrics3=subset(metrics,metric=="pop_dff")
+    #metrics1$metric=as.character(metrics1$metric)
+    #metrics2$metric=as.character(metrics2$metric)
+    
+   # print(levels(metrics1))
+  #  print(levels(metrics2))
+   # levels(metrics1)=c("D_seats_2014","D_seats_2016")
+  #  levels(metrics2)=c("polsby_min","polsby_avg")
+    state$metrics1 = metrics1
+    state$metrics2 = metrics2
+    state$metrics3 = metrics3
+    
+
+    state$trace_plot1 = ggplot(metrics1, aes(x=iter,y=value)) +
+      geom_line() +
+      facet_grid(metric~. ,scales="fixed",drop=T) +
       theme_bw()
 
-    # state$trace_plot1 = ggplot(metrics1, aes(x=iter,y=value)) +
-    #   geom_line() +
-    #   facet_grid(metric~. ,scales="free_y") +
-    #   theme_bw()
-    # 
-    # state$trace_plot2 = ggplot(metrics2, aes(x=iter,y=value)) +
-    #   geom_line() +
-    #   facet_grid(metric~. ,scales="free_y") +
-    #   theme_bw()
-    # 
-    # state$trace_plot3 = ggplot(metrics3, aes(x=iter,y=value)) +
-    #   geom_line() +
-    #   facet_grid(metric~. ,scales="free_y") +
-    #   theme_bw()
+    state$trace_plot2 = ggplot(metrics2, aes(x=iter,y=value)) +
+      geom_line() +
+      facet_grid(metric~. ,scales="fixed",drop=T) +
+      theme_bw()
+
+    state$trace_plot3 = ggplot(metrics3, aes(x=iter,y=value)) +
+      geom_line() +  theme_bw()
+      #facet_grid(metric~. ,scales="fixed") +
+      #theme_bw()
 
     state$density_plot = ggplot(metrics, aes(x=value)) + 
       geom_density() +
@@ -123,12 +138,28 @@ server = function(input, output, session) {
     shinyjs::show("iter")
   })
   
-  output$trace_plot=renderPlot({
+  output$trace_plot1=renderPlot({
     if (is.null(state$metrics))
       return()
     
-    state$trace_plot +
-      geom_vline(data=filter(state$metrics, iter==input$iter), aes(xintercept=iter), color="red")
+    state$trace_plot1 +
+      geom_vline(data=filter(state$metrics1, iter==input$iter), aes(xintercept=iter), color="red")
+  })
+  
+  output$trace_plot2=renderPlot({
+    if (is.null(state$metrics))
+      return()
+    
+    state$trace_plot2 +
+      geom_vline(data=filter(state$metrics2, iter==input$iter), aes(xintercept=iter), color="red")
+  })
+  
+  output$trace_plot3=renderPlot({
+    if (is.null(state$metrics))
+      return()
+    
+    state$trace_plot3 +
+      geom_vline(data=filter(state$metrics3, iter==input$iter), aes(xintercept=iter), color="red")
   })
   output$density_plot=renderPlot({
     if (is.null(state$metrics))
